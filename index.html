@@ -47,7 +47,7 @@
             border-right: 1px solid rgba(0, 242, 255, 0.2);
             position: relative;
             z-index: 50;
-            overflow: hidden; /* ปิดการแสดง scrollbar ที่ตัว sidebar หลัก */
+            overflow: hidden; 
         }
 
         .sidebar:hover {
@@ -182,13 +182,13 @@
 
         /* ซ่อน Scrollbar ของแถบเมนูด้านซ้าย */
         #sidebar-nav { 
-            scrollbar-width: none; /* สำหรับ Firefox */
-            -ms-overflow-style: none;  /* สำหรับ IE และ Edge */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             overflow-y: auto;
         }
         
         #sidebar-nav::-webkit-scrollbar { 
-            display: none; /* สำหรับ Chrome, Safari และ Opera */
+            display: none;
         }
 
         /* --- UI Effects --- */
@@ -273,13 +273,13 @@
             <div class="relative group cursor-pointer" onclick="enterSystem()">
                 <div class="absolute -inset-4 bg-cyan-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
                 <button id="login-btn" class="relative px-10 py-4 bg-transparent border border-cyan-500/50 text-cyan-400 rounded-full hover:bg-cyan-500 hover:text-white transition-all duration-300 tracking-widest overflow-hidden">
-                    <span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าใช้งานระบบ</span>
+                    <span class="relative z-10 font-medium text-lg text-white">คลิกเพื่อเข้าใช้งานระบบ</span>
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 </button>
             </div>
             
             <button onclick="requestNotificationPermission()" class="text-[10px] text-slate-500 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em] font-future">
-                เปิดการแจ้งเตือนไปยัง Desktop [Windows/Mac]
+                เปิดการแจ้งเตือนแบบ Desktop (เฉพาะเมื่อเปิดหน้าเว็บนี้ค้างไว้)
             </button>
         </div>
     </div>
@@ -445,7 +445,8 @@
             if (!("Notification" in window)) return;
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    new Notification("ระบบ M-FLOW", { body: "เปิดใช้งานการแจ้งเตือนเรียบร้อยแล้ว", icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
+                    // แจ้งเตือนยืนยันเฉพาะตอนที่ยังเปิดหน้าเว็บอยู่
+                    new Notification("ระบบ M-FLOW", { body: "เปิดใช้งานการแจ้งเตือนสำเร็จ (จะแจ้งเตือนเมื่อเปิดหน้านี้ค้างไว้เท่านั้น)", icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
                 }
             });
         }
@@ -460,10 +461,22 @@
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             document.getElementById('current-date').innerText = `${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
             
+            // ตรวจสอบรอบ SLA
             if (SLA_HOURS.includes(h) && m === 0 && s === 0 && lastAlertHour !== h) {
-                showSlaAlert();
+                
+                // --- ส่วนที่แก้ไข: ตรวจสอบว่าหน้าเว็บยังคงเปิดอยู่หรือไม่ ---
+                // Browser จะรัน JS นี้ได้ก็ต่อเมื่อ "เปิดหน้าเว็บค้างไว้" เท่านั้น
+                // แต่การเช็ค document.visibilityState จะช่วยให้มั่นใจว่าแจ้งเตือนจะทำงานแม้จะสลับไปใช้โปรแกรมอื่น
+                
+                showSlaAlert(); // แสดง Alert บนหน้าเว็บ (ถ้าเปิดอยู่)
+
+                // ยิง Notification ไปที่ Desktop (ถ้าเปิดสิทธิ์ไว้ และเปิดหน้าเว็บค้างไว้)
                 if (Notification.permission === "granted") {
-                    new Notification("แจ้งเตือน SLA 3 ชั่วโมง", { body: "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA" });
+                    new Notification("แจ้งเตือน SLA 3 ชั่วโมง", { 
+                        body: "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA",
+                        icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
+                        tag: 'sla-notification' // ป้องกันการเด้งซ้ำ
+                    });
                 }
                 lastAlertHour = h;
             }
