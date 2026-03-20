@@ -187,16 +187,23 @@
             <p class="text-cyan-500/80 tracking-[0.3em] text-lg font-medium">ศูนย์รวมระบบช่วยเหลือการทำงาน</p>
         </div>
         
-        <div class="relative group cursor-pointer" onclick="enterSystem()">
-            <div class="absolute -inset-4 bg-cyan-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <button id="login-btn" class="relative px-10 py-4 bg-transparent border border-cyan-500/50 text-cyan-400 rounded-full hover:bg-cyan-500 hover:text-white transition-all duration-300 tracking-widest overflow-hidden">
-                <span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าใช้งานระบบ</span>
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+        <div class="flex flex-col items-center gap-4">
+            <div class="relative group cursor-pointer" onclick="enterSystem()">
+                <div class="absolute -inset-4 bg-cyan-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                <button id="login-btn" class="relative px-10 py-4 bg-transparent border border-cyan-500/50 text-cyan-400 rounded-full hover:bg-cyan-500 hover:text-white transition-all duration-300 tracking-widest overflow-hidden">
+                    <span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าใช้งานระบบ</span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                </button>
+            </div>
+            
+            <!-- Notification Request Button -->
+            <button onclick="requestNotificationPermission()" class="text-[10px] text-slate-500 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em] font-future">
+                เปิดการแจ้งเตือนไปยัง Desktop [Windows/Mac]
             </button>
         </div>
     </div>
 
-    <!-- Section: Logout Overlay (No White Flash) -->
+    <!-- Section: Logout Overlay -->
     <div id="logout-overlay">
         <div class="logout-box">
             <div class="mb-6">
@@ -211,10 +218,10 @@
     </div>
 
     <!-- Preload Status Overlay -->
-    <div id="preload-overlay">
-        <div class="flex items-center gap-3">
-            <div class="animate-spin h-4 w-4 border-2 border-cyan-500 border-t-transparent rounded-full"></div>
-            <span class="text-xs text-cyan-400 font-future">กำลังเชื่อมต่อฐานข้อมูลระบบ... <span id="preload-count">0</span>%</span>
+    <div id="preload-overlay" class="fixed bottom-4 right-4 z-[110] hidden">
+        <div class="glass-panel px-4 py-2 flex items-center gap-3 border-cyan-500/30">
+            <div class="animate-spin h-3 w-3 border-2 border-cyan-500 border-t-transparent rounded-full"></div>
+            <span class="text-[10px] text-cyan-400 font-future uppercase tracking-widest">SYNCING MODULES: <span id="preload-count">0</span>%</span>
         </div>
     </div>
 
@@ -249,7 +256,7 @@
         <div id="sla-alert" class="hidden absolute top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-2xl">
             <div class="glass-panel border-yellow-400/50 bg-yellow-400/10 p-4 flex items-center justify-between shadow-[0_0_30px_rgba(253,224,71,0.2)] alert-active">
                 <div class="flex items-center gap-3">
-                    <span class="text-2xl">🔔</span>
+                    <span class="text-2xl animate-bounce">🔔</span>
                     <div>
                         <h4 class="font-future text-yellow-400 text-sm font-bold uppercase">แจ้งเตือนรอบ SLA 3 ชั่วโมง</h4>
                         <p class="text-[10px] text-yellow-200/70 tracking-wide">ขณะนี้ถึงรอบเวลาตรวจสอบข้อมูลแล้ว (06, 09, 12, 15, 18, 21)</p>
@@ -327,16 +334,41 @@
         let lastAlertHour = -1; 
         const SLA_HOURS = [6, 9, 12, 15, 18, 21];
 
+        // ฟังก์ชันขออนุญาตแจ้งเตือน Desktop
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือนแบบ Desktop");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    new Notification("ระบบ M-FLOW", { body: "เปิดใช้งานการแจ้งเตือนเรียบร้อยแล้ว", icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
+                }
+            });
+        }
+
+        // ระบบเสียงถูกเอาออกตามคำขอ
+
+        function sendDesktopNotification(title, body) {
+            if (Notification.permission === "granted") {
+                new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
+            }
+        }
+
         function updateClock() {
             const now = new Date();
             const h = now.getHours();
             const m = now.getMinutes();
             const s = now.getSeconds();
+            
             document.getElementById('digital-clock').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             document.getElementById('current-date').innerText = `${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+            
+            // แจ้งเตือน SLA (Desktop Only - No Sound)
             if (SLA_HOURS.includes(h) && m === 0 && s === 0 && lastAlertHour !== h) {
                 showSlaAlert();
+                sendDesktopNotification("แจ้งเตือน SLA 3 ชั่วโมง", "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA");
                 lastAlertHour = h;
             }
         }
@@ -347,6 +379,7 @@
         window.onload = () => {
             setInterval(updateClock, 1000);
             updateClock();
+            
             const navContainer = document.getElementById('nav-container');
             APPS.forEach(app => {
                 const btn = document.createElement('button');
@@ -361,7 +394,9 @@
         async function enterSystem() {
             const welcome = document.getElementById('welcome-screen');
             document.getElementById('login-btn').innerHTML = '<span class="animate-pulse">กำลังเริ่มระบบ...</span>';
+            
             await preloadAllApps();
+            
             welcome.style.transform = 'translateY(-100%)';
             setTimeout(() => {
                 welcome.classList.add('hidden');
@@ -394,8 +429,9 @@
             if (isPreloaded) return;
             const overlay = document.getElementById('preload-overlay');
             const container = document.getElementById('stack-container');
-            overlay.style.display = 'block';
+            overlay.classList.remove('hidden');
             let completed = 0;
+            
             for (const app of APPS) {
                 if (!loadedApps[app.id]) {
                     const wrap = document.createElement('div');
@@ -413,7 +449,7 @@
                 }
             }
             isPreloaded = true;
-            setTimeout(() => overlay.style.display = 'none', 500);
+            setTimeout(() => overlay.classList.add('hidden'), 500);
         }
 
         function handleLogoutClick() {
@@ -429,27 +465,19 @@
         function executeLogout() {
             const overlay = document.getElementById('logout-overlay');
             const progress = document.getElementById('logout-progress');
-            
             overlay.style.display = 'flex';
             setTimeout(() => progress.style.width = '100%', 50);
 
             setTimeout(() => {
-                // UI Reset instead of Page Reload
                 document.getElementById('welcome-screen').classList.remove('hidden');
                 document.getElementById('welcome-screen').style.transform = 'translateY(0)';
-                document.getElementById('login-btn').innerHTML = '<span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าใช้งานระบบ</span>';
-                
-                // Hide current UI
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-content').classList.add('hidden');
                 document.getElementById('top-bar').classList.add('hidden');
                 closeCurrentApp();
-                
-                // Reset states
                 overlay.style.display = 'none';
                 progress.style.width = '0';
                 resetLogoutButton();
-                logoutConfirmState = false;
             }, 3000);
         }
 
