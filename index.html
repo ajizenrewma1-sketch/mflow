@@ -79,6 +79,16 @@
             opacity: 1;
         }
 
+        /* ซ่อนแถบเลื่อนในเมนู Sidebar */
+        #sidebar-nav {
+            scrollbar-width: none; /* สำหรับ Firefox */
+            -ms-overflow-style: none;  /* สำหรับ Internet Explorer และ Edge */
+        }
+        
+        #sidebar-nav::-webkit-scrollbar {
+            display: none; /* สำหรับ Chrome, Safari และ Opera */
+        }
+
         #app-header {
             background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(12px);
@@ -89,9 +99,9 @@
             flex: 1;
             height: 100vh;
             position: relative;
+            will-change: transform;
         }
 
-        /* Iframe styling for the stack */
         .app-iframe {
             position: absolute;
             top: 0;
@@ -101,11 +111,13 @@
             border: none;
             background: white; 
             border-radius: 1.5rem 0 0 0;
-            display: none; /* Hidden by default */
+            display: none; 
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         .app-iframe.active {
-            display: block; /* Show only active one */
+            display: block; 
         }
 
         .hidden { display: none; }
@@ -115,13 +127,13 @@
             overflow: hidden;
             background: rgba(255, 255, 255, 0.02);
             margin: 4px 0;
+            cursor: pointer;
         }
         .nav-item:hover {
             background: rgba(96, 165, 250, 0.15);
             box-shadow: 0 0 15px rgba(96, 165, 250, 0.1);
         }
         
-        /* Active state for menu buttons */
         .nav-item.active-menu {
             background: rgba(96, 165, 250, 0.25);
             border-left: 4px solid #60a5fa;
@@ -201,7 +213,7 @@
             </nav>
 
             <div class="p-4 border-t border-white/5 opacity-40 text-[10px] text-center uppercase tracking-widest">
-                M-Flow System v3.0
+                M-Flow System v3.1 (Optimized)
             </div>
         </aside>
 
@@ -212,9 +224,11 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"></path></svg>
                     กลับสู่หน้าเมนูหลัก (ไม่ล้างข้อมูล)
                 </button>
-                <div class="flex items-center space-x-2">
-                    <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
-                    <span id="active-app-name" class="text-[10px] text-blue-300/60 uppercase tracking-[0.2em] font-bold">Terminal Active</span>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                        <span id="active-app-name" class="text-[10px] text-blue-300/60 uppercase tracking-[0.2em] font-bold">Terminal Active</span>
+                    </div>
                 </div>
             </div>
 
@@ -225,11 +239,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A2 2 0 013 15.482V5.518a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.669V15l-6 5V20z"></path>
                     </svg>
                     <p class="text-xl font-light tracking-[0.3em] text-blue-400/40 uppercase">เลือกเครื่องมือเพื่อเริ่มต้น</p>
-                    <p class="text-[10px] mt-2 text-blue-300/20 italic">ข้อมูลจะไม่หายเมื่อสลับเมนู</p>
+                    <p class="text-[10px] mt-2 text-blue-300/20 italic">ระบบรันแยก Iframe เพื่อป้องกันข้อมูลหายและเพิ่มความเสถียร</p>
                 </div>
             </div>
 
-            <!-- Iframe Stack Container -->
             <div id="iframe-stack" class="flex-1 relative hidden overflow-hidden">
                 <!-- Iframes will be generated here dynamically -->
             </div>
@@ -244,7 +257,7 @@
         const appHeader = document.getElementById('app-header');
         const activeAppName = document.getElementById('active-app-name');
         
-        let loadedApps = {}; // Stores appId: iframeElement mapping
+        let loadedApps = {};
 
         function enterSystem() {
             welcomeScreen.style.opacity = '0';
@@ -258,58 +271,61 @@
         }
 
         function switchApp(id, url) {
-            // 1. Hide placeholder and show stack container
-            noAppSelected.classList.add('hidden');
-            iframeStack.classList.remove('hidden');
-            appHeader.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                noAppSelected.classList.add('hidden');
+                iframeStack.classList.remove('hidden');
+                appHeader.classList.remove('hidden');
 
-            // 2. Hide all existing iframes
-            const allIframes = document.querySelectorAll('.app-iframe');
-            allIframes.forEach(iframe => iframe.classList.remove('active'));
+                const allIframes = document.querySelectorAll('.app-iframe');
+                allIframes.forEach(iframe => {
+                    iframe.classList.remove('active');
+                });
 
-            // 3. Highlight active menu
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                if(item.getAttribute('data-id') === id) {
-                    item.classList.add('active-menu');
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    if(item.getAttribute('data-id') === id) {
+                        item.classList.add('active-menu');
+                    } else {
+                        item.classList.remove('active-menu');
+                    }
+                });
+
+                if (!loadedApps[id]) {
+                    const newIframe = document.createElement('iframe');
+                    newIframe.setAttribute('loading', 'lazy');
+                    newIframe.setAttribute('allow', 'clipboard-write');
+                    newIframe.className = 'app-iframe active shadow-[0_-20px_50px_rgba(0,0,0,0.5)]';
+                    newIframe.id = `iframe-${id}`;
+                    
+                    iframeStack.appendChild(newIframe);
+                    setTimeout(() => {
+                        newIframe.src = url;
+                    }, 10);
+                    
+                    loadedApps[id] = newIframe;
                 } else {
-                    item.classList.remove('active-menu');
+                    loadedApps[id].classList.add('active');
                 }
+
+                activeAppName.innerText = id.toUpperCase() + " RUNNING";
             });
-
-            // 4. Create iframe if it doesn't exist
-            if (!loadedApps[id]) {
-                const newIframe = document.createElement('iframe');
-                newIframe.src = url;
-                newIframe.className = 'app-iframe active shadow-[0_-20px_50px_rgba(0,0,0,0.5)]';
-                newIframe.setAttribute('allow', 'clipboard-write');
-                newIframe.id = `iframe-${id}`;
-                iframeStack.appendChild(newIframe);
-                loadedApps[id] = newIframe;
-            } else {
-                // Just show existing one
-                loadedApps[id].classList.add('active');
-            }
-
-            // Update header text
-            activeAppName.innerText = id.toUpperCase() + " ACTIVE";
         }
 
         function closeCurrentApp() {
-            // Just go back to "No App Selected" view without removing iframes
             iframeStack.classList.add('hidden');
             appHeader.classList.add('hidden');
             noAppSelected.classList.remove('hidden');
             
-            // Remove active menu highlighting
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => item.classList.remove('active-menu'));
+
+            const allIframes = document.querySelectorAll('.app-iframe');
+            allIframes.forEach(iframe => iframe.classList.remove('active'));
         }
 
         function goBackHome() {
             mainApp.style.opacity = '0';
             setTimeout(() => {
-                // ล้างข้อมูลทั้งหมดจริงๆ (ลบ Iframe ออกจาก DOM)
                 iframeStack.innerHTML = '';
                 loadedApps = {};
                 
@@ -324,6 +340,10 @@
                 }, 50);
             }, 700);
         }
+
+        window.addEventListener('beforeunload', () => {
+            iframeStack.innerHTML = '';
+        });
     </script>
 </body>
 </html>
