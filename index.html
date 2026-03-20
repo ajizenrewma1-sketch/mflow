@@ -38,6 +38,7 @@
             mask-image: radial-gradient(circle at center, black, transparent 80%);
         }
 
+        /* Sidebar Styling */
         .sidebar {
             width: 75px;
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -46,6 +47,7 @@
             border-right: 1px solid rgba(0, 242, 255, 0.2);
             position: relative;
             z-index: 50;
+            overflow: hidden; /* ปิดการแสดง scrollbar ที่ตัว sidebar หลัก */
         }
 
         .sidebar:hover {
@@ -107,6 +109,89 @@
             background: #fff;
         }
 
+        /* Quick Note Sidebar */
+        #quick-note-panel {
+            position: fixed;
+            right: -320px;
+            top: 80px;
+            bottom: 80px;
+            width: 360px;
+            z-index: 60;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+        }
+
+        #quick-note-panel.open {
+            right: 0;
+        }
+
+        .note-toggle {
+            width: 40px;
+            height: 120px;
+            background: var(--neon-cyan);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px 0 0 15px;
+            cursor: pointer;
+            writing-mode: vertical-rl;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: -5px 0 20px rgba(0, 242, 255, 0.3);
+            text-orientation: mixed;
+            transform: scaleY(-1);
+            align-self: flex-start;
+            margin-top: 20px;
+        }
+
+        .note-content {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 242, 255, 0.3);
+            border-top: 1px solid rgba(0, 242, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            padding: 20px;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #quick-note-area {
+            flex: 1;
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            color: #fff;
+            font-family: 'Kanit', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            outline: none;
+            resize: none;
+            scrollbar-width: none;
+        }
+
+        #quick-note-area::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ซ่อน Scrollbar ของแถบเมนูด้านซ้าย */
+        #sidebar-nav { 
+            scrollbar-width: none; /* สำหรับ Firefox */
+            -ms-overflow-style: none;  /* สำหรับ IE และ Edge */
+            overflow-y: auto;
+        }
+        
+        #sidebar-nav::-webkit-scrollbar { 
+            display: none; /* สำหรับ Chrome, Safari และ Opera */
+        }
+
+        /* --- UI Effects --- */
         @keyframes pulse-yellow {
             0% { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0.4); }
             70% { box-shadow: 0 0 0 15px rgba(253, 224, 71, 0); }
@@ -117,9 +202,6 @@
             animation: pulse-yellow 2s infinite;
             border-color: var(--neon-yellow) !important;
         }
-
-        #sidebar-nav { scrollbar-width: none; }
-        #sidebar-nav::-webkit-scrollbar { display: none; }
 
         @keyframes scanline {
             0% { transform: translateY(-100%); }
@@ -196,10 +278,22 @@
                 </button>
             </div>
             
-            <!-- Notification Request Button -->
             <button onclick="requestNotificationPermission()" class="text-[10px] text-slate-500 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em] font-future">
                 เปิดการแจ้งเตือนไปยัง Desktop [Windows/Mac]
             </button>
+        </div>
+    </div>
+
+    <!-- Quick Note Sidebar -->
+    <div id="quick-note-panel">
+        <div class="note-toggle" onclick="toggleQuickNote()">QUICK NOTE</div>
+        <div class="note-content">
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-future text-cyan-400 text-[10px] tracking-widest">SCRATCHPAD</span>
+                <button onclick="clearNote()" class="text-[8px] text-slate-500 hover:text-red-400 transition-colors uppercase">Clear All</button>
+            </div>
+            <textarea id="quick-note-area" placeholder="พิมพ์เลขทะเบียน, เลขเคส หรือหมายเหตุที่นี่..."></textarea>
+            <p class="text-[8px] text-slate-600 mt-3 italic text-right uppercase tracking-tighter">Data persists until browser refresh</p>
         </div>
     </div>
 
@@ -226,7 +320,7 @@
     </div>
 
     <!-- Sidebar -->
-    <aside id="main-sidebar" class="sidebar flex flex-col hidden overflow-hidden">
+    <aside id="main-sidebar" class="sidebar flex flex-col hidden">
         <div id="logout-trigger" class="h-20 flex items-center px-5 mb-4 border-b border-cyan-500/10 cursor-pointer hover:bg-red-500/10 transition-all group" onclick="handleLogoutClick()">
             <div id="logout-icon-box" class="min-w-[40px] h-10 flex items-center justify-center bg-cyan-600 rounded-lg shadow-[0_0_15px_rgba(0,242,255,0.4)] transition-all">
                 <svg id="logout-svg" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -237,7 +331,8 @@
             </div>
         </div>
 
-        <nav id="sidebar-nav" class="flex-1 overflow-y-auto space-y-1">
+        <!-- Sidebar Navigation Area -->
+        <nav id="sidebar-nav" class="flex-1 space-y-1">
             <div id="nav-container"></div>
         </nav>
 
@@ -334,25 +429,25 @@
         let lastAlertHour = -1; 
         const SLA_HOURS = [6, 9, 12, 15, 18, 21];
 
-        // ฟังก์ชันขออนุญาตแจ้งเตือน Desktop
-        function requestNotificationPermission() {
-            if (!("Notification" in window)) {
-                alert("เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือนแบบ Desktop");
-                return;
+        // --- Quick Note Functions ---
+        function toggleQuickNote() {
+            document.getElementById('quick-note-panel').classList.toggle('open');
+        }
+
+        function clearNote() {
+            if(confirm('ล้างบันทึกทั้งหมดหรือไม่?')) {
+                document.getElementById('quick-note-area').value = '';
             }
+        }
+
+        // --- Core System Functions ---
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) return;
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
                     new Notification("ระบบ M-FLOW", { body: "เปิดใช้งานการแจ้งเตือนเรียบร้อยแล้ว", icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
                 }
             });
-        }
-
-        // ระบบเสียงถูกเอาออกตามคำขอ
-
-        function sendDesktopNotification(title, body) {
-            if (Notification.permission === "granted") {
-                new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
-            }
         }
 
         function updateClock() {
@@ -365,10 +460,11 @@
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             document.getElementById('current-date').innerText = `${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
             
-            // แจ้งเตือน SLA (Desktop Only - No Sound)
             if (SLA_HOURS.includes(h) && m === 0 && s === 0 && lastAlertHour !== h) {
                 showSlaAlert();
-                sendDesktopNotification("แจ้งเตือน SLA 3 ชั่วโมง", "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA");
+                if (Notification.permission === "granted") {
+                    new Notification("แจ้งเตือน SLA 3 ชั่วโมง", { body: "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA" });
+                }
                 lastAlertHour = h;
             }
         }
@@ -393,9 +489,10 @@
 
         async function enterSystem() {
             const welcome = document.getElementById('welcome-screen');
-            document.getElementById('login-btn').innerHTML = '<span class="animate-pulse">กำลังเริ่มระบบ...</span>';
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.innerHTML = '<span class="animate-pulse">กำลังตรวจสอบโมดูล...</span>';
             
-            await preloadAllApps();
+            if (!isPreloaded) await preloadAllApps();
             
             welcome.style.transform = 'translateY(-100%)';
             setTimeout(() => {
@@ -403,6 +500,7 @@
                 document.getElementById('main-sidebar').classList.remove('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
                 document.getElementById('top-bar').classList.remove('hidden');
+                loginBtn.innerHTML = '<span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าใช้งานระบบ</span>';
             }, 800);
         }
 
@@ -431,7 +529,6 @@
             const container = document.getElementById('stack-container');
             overlay.classList.remove('hidden');
             let completed = 0;
-            
             for (const app of APPS) {
                 if (!loadedApps[app.id]) {
                     const wrap = document.createElement('div');
@@ -443,7 +540,7 @@
                     container.appendChild(wrap);
                     iframe.src = app.url;
                     loadedApps[app.id] = wrap;
-                    await new Promise(r => setTimeout(r, 50)); 
+                    await new Promise(r => setTimeout(r, 80)); 
                     completed++;
                     document.getElementById('preload-count').innerText = Math.round((completed / APPS.length) * 100);
                 }
