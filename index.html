@@ -12,7 +12,6 @@
         body {
             font-family: 'Kanit', sans-serif;
             overflow: hidden;
-            /* พื้นหลังหลักของทั้งระบบ */
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1545143877-4e758e65b45a?auto=format&fit=crop&q=80&w=2000');
             background-size: cover;
             background-position: center;
@@ -20,7 +19,6 @@
             color: #e2e8f0;
         }
 
-        /* Marquee Animation */
         .marquee-container {
             width: 100%;
             overflow: hidden;
@@ -47,7 +45,6 @@
             100% { transform: translate(-100%, 0); }
         }
 
-        /* Blue Sparkling Effect for M-Flow */
         .m-flow-glow {
             color: #60a5fa;
             text-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(96, 165, 250, 0.5);
@@ -59,7 +56,6 @@
             to { opacity: 1; filter: brightness(1.5) drop-shadow(0 0 8px #60a5fa); }
         }
 
-        /* Sidebar Slide Effect - Glassmorphism */
         .sidebar {
             width: 60px;
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -83,53 +79,37 @@
             opacity: 1;
         }
 
-        /* Welcome Screen Overlay */
-        #welcome-screen {
-            background: transparent; /* ใช้พื้นหลังของ body */
-        }
-
-        /* Main Content Area Theme */
-        #main-app {
-            background: transparent; /* ใช้พื้นหลังของ body */
-        }
-
         #app-header {
             background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(96, 165, 250, 0.15);
         }
 
-        #no-app-selected {
-            background: transparent;
-        }
-
-        /* Iframe Container */
         .content-area {
             flex: 1;
             height: 100vh;
             position: relative;
         }
 
-        iframe {
+        /* Iframe styling for the stack */
+        .app-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border: none;
             background: white; 
             border-radius: 1.5rem 0 0 0;
+            display: none; /* Hidden by default */
+        }
+
+        .app-iframe.active {
+            display: block; /* Show only active one */
         }
 
         .hidden { display: none; }
 
-        /* Custom Scrollbar for Sidebar */
-        .sidebar nav::-webkit-scrollbar {
-            width: 4px;
-        }
-        .sidebar nav::-webkit-scrollbar-thumb {
-            background: rgba(96, 165, 250, 0.3);
-            border-radius: 10px;
-        }
-
-        /* Nav item hover effect */
         .nav-item {
             position: relative;
             overflow: hidden;
@@ -139,6 +119,12 @@
         .nav-item:hover {
             background: rgba(96, 165, 250, 0.15);
             box-shadow: 0 0 15px rgba(96, 165, 250, 0.1);
+        }
+        
+        /* Active state for menu buttons */
+        .nav-item.active-menu {
+            background: rgba(96, 165, 250, 0.25);
+            border-left: 4px solid #60a5fa;
         }
     </style>
 </head>
@@ -165,88 +151,87 @@
         
         <!-- Sidebar Menu -->
         <aside class="sidebar text-white flex flex-col h-full shadow-2xl overflow-hidden">
-            <!-- Header ที่เปลี่ยนเป็นปุ่มกลับหน้าแรก -->
-            <div onclick="goBackHome()" class="p-4 flex items-center mb-6 border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors group">
+            <div onclick="goBackHome()" title="กลับหน้าแรกและล้างข้อมูลทั้งหมด" class="p-4 flex items-center mb-6 border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors group">
                 <div class="w-8 h-8 bg-blue-500 rounded-lg flex-shrink-0 flex items-center justify-center font-bold shadow-[0_0_15px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">M</div>
                 <span class="sidebar-text ml-4 font-bold text-lg tracking-wider text-blue-400 group-hover:text-blue-300">M-FLOW HUB</span>
             </div>
 
-            <nav class="flex-1 space-y-1 overflow-y-auto px-2">
-                <button onclick="loadPage('https://sla-temp.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+            <nav id="sidebar-nav" class="flex-1 space-y-1 overflow-y-auto px-2">
+                <!-- Navigation Buttons -->
+                <button onclick="switchApp('sla', 'https://sla-temp.vercel.app/')" data-id="sla" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">⏱️</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">SLA 3 ชั่วโมง</span>
                 </button>
-                <button onclick="loadPage('https://r05-vs-tcvs.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('r05', 'https://r05-vs-tcvs.vercel.app/')" data-id="r05" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📊</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">ชนข้อมูลต่างๆ</span>
                 </button>
-                <button onclick="loadPage('https://dispult.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('dispute-find', 'https://dispult.vercel.app/')" data-id="dispute-find" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">🔍</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">หาเหตุผลที่ไม่เจอ TCVS</span>
                 </button>
-                <button onclick="loadPage('https://pinai.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('pinai', 'https://pinai.vercel.app/')" data-id="pinai" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📜</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">ทำพินัย</span>
                 </button>
-                <button onclick="loadPage('https://multi-dispul.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('multi-dis', 'https://multi-dispul.vercel.app/')" data-id="multi-dis" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">🚗</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">การทำโต้แย้งหลายทะเบียน</span>
                 </button>
-                <button onclick="loadPage('https://dupit.netlify.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('single-dis', 'https://dupit.netlify.app/')" data-id="single-dis" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📍</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">การทำโต้แย้งทีละ 1 ทะเบียน</span>
                 </button>
-                <button onclick="loadPage('https://log-l.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('log-l', 'https://log-l.vercel.app/')" data-id="log-l" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📝</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">แยก Log L</span>
                 </button>
-                <button onclick="loadPage('https://tg-five-xi.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('tg-ยอด', 'https://tg-five-xi.vercel.app/')" data-id="tg-ยอด" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📈</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">ทำยอด TG</span>
                 </button>
-                <button onclick="loadPage('https://temp3hours.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('temp-press', 'https://temp3hours.vercel.app/')" data-id="temp-press" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">💡</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">ทำยอดกดน้อง Temp</span>
                 </button>
-                <button onclick="loadPage('https://temp-wong.vercel.app/')" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
+                <button onclick="switchApp('temp-wrong', 'https://temp-wong.vercel.app/')" data-id="temp-wrong" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
                     <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">⚠️</span>
                     <span class="sidebar-text ml-4 text-sm font-medium">ลงยอดผิด Temp</span>
                 </button>
             </nav>
 
             <div class="p-4 border-t border-white/5 opacity-40 text-[10px] text-center uppercase tracking-widest">
-                M-Flow System v2.5
+                M-Flow System v3.0
             </div>
         </aside>
 
         <!-- Main Content Area -->
         <main class="content-area flex flex-col">
-            <!-- Header for navigation -->
             <div id="app-header" class="hidden p-3 flex justify-between items-center">
-                <button onclick="goBackToMenu()" class="flex items-center text-blue-300 hover:text-blue-100 font-medium transition-colors">
+                <button onclick="closeCurrentApp()" class="flex items-center text-blue-300 hover:text-blue-100 font-medium transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"></path></svg>
-                    ปิดแอพและกลับสู่เมนู
+                    กลับสู่หน้าเมนูหลัก (ไม่ล้างข้อมูล)
                 </button>
                 <div class="flex items-center space-x-2">
                     <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
-                    <span class="text-[10px] text-blue-300/60 uppercase tracking-[0.2em] font-bold">System Online</span>
+                    <span id="active-app-name" class="text-[10px] text-blue-300/60 uppercase tracking-[0.2em] font-bold">Terminal Active</span>
                 </div>
             </div>
 
-            <!-- Placeholder Screen -->
             <div id="no-app-selected" class="flex-1 flex flex-col items-center justify-center">
                 <div class="text-center relative">
                     <div class="absolute -inset-20 bg-blue-500/5 blur-[100px] rounded-full"></div>
                     <svg class="w-24 h-24 mb-6 opacity-20 mx-auto text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A2 2 0 013 15.482V5.518a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.669V15l-6 5V20z"></path>
                     </svg>
-                    <p class="text-xl font-light tracking-[0.3em] text-blue-400/40 uppercase">Select Terminal Module</p>
+                    <p class="text-xl font-light tracking-[0.3em] text-blue-400/40 uppercase">เลือกเครื่องมือเพื่อเริ่มต้น</p>
+                    <p class="text-[10px] mt-2 text-blue-300/20 italic">ข้อมูลจะไม่หายเมื่อสลับเมนู</p>
                 </div>
             </div>
 
-            <!-- Iframe Container -->
-            <div id="iframe-container" class="flex-1 hidden">
-                <iframe id="app-frame" src="about:blank" class="shadow-[0_-20px_50px_rgba(0,0,0,0.5)]"></iframe>
+            <!-- Iframe Stack Container -->
+            <div id="iframe-stack" class="flex-1 relative hidden overflow-hidden">
+                <!-- Iframes will be generated here dynamically -->
             </div>
         </main>
     </div>
@@ -254,45 +239,84 @@
     <script>
         const welcomeScreen = document.getElementById('welcome-screen');
         const mainApp = document.getElementById('main-app');
-        const appFrame = document.getElementById('app-frame');
-        const iframeContainer = document.getElementById('iframe-container');
+        const iframeStack = document.getElementById('iframe-stack');
         const noAppSelected = document.getElementById('no-app-selected');
         const appHeader = document.getElementById('app-header');
+        const activeAppName = document.getElementById('active-app-name');
+        
+        let loadedApps = {}; // Stores appId: iframeElement mapping
 
         function enterSystem() {
             welcomeScreen.style.opacity = '0';
             setTimeout(() => {
                 welcomeScreen.classList.add('hidden');
                 mainApp.classList.remove('hidden');
-                // ค่อยๆ แสดงหน้าหลัก
                 setTimeout(() => {
                     mainApp.style.opacity = '1';
                 }, 50);
-                goBackToMenu();
             }, 700);
         }
 
-        function loadPage(url) {
-            appFrame.src = "about:blank";
+        function switchApp(id, url) {
+            // 1. Hide placeholder and show stack container
             noAppSelected.classList.add('hidden');
-            iframeContainer.classList.remove('hidden');
+            iframeStack.classList.remove('hidden');
             appHeader.classList.remove('hidden');
-            setTimeout(() => {
-                appFrame.src = url;
-            }, 50);
+
+            // 2. Hide all existing iframes
+            const allIframes = document.querySelectorAll('.app-iframe');
+            allIframes.forEach(iframe => iframe.classList.remove('active'));
+
+            // 3. Highlight active menu
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                if(item.getAttribute('data-id') === id) {
+                    item.classList.add('active-menu');
+                } else {
+                    item.classList.remove('active-menu');
+                }
+            });
+
+            // 4. Create iframe if it doesn't exist
+            if (!loadedApps[id]) {
+                const newIframe = document.createElement('iframe');
+                newIframe.src = url;
+                newIframe.className = 'app-iframe active shadow-[0_-20px_50px_rgba(0,0,0,0.5)]';
+                newIframe.setAttribute('allow', 'clipboard-write');
+                newIframe.id = `iframe-${id}`;
+                iframeStack.appendChild(newIframe);
+                loadedApps[id] = newIframe;
+            } else {
+                // Just show existing one
+                loadedApps[id].classList.add('active');
+            }
+
+            // Update header text
+            activeAppName.innerText = id.toUpperCase() + " ACTIVE";
         }
 
-        function goBackToMenu() {
-            appFrame.src = "about:blank";
-            iframeContainer.classList.add('hidden');
+        function closeCurrentApp() {
+            // Just go back to "No App Selected" view without removing iframes
+            iframeStack.classList.add('hidden');
             appHeader.classList.add('hidden');
             noAppSelected.classList.remove('hidden');
+            
+            // Remove active menu highlighting
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active-menu'));
         }
 
         function goBackHome() {
             mainApp.style.opacity = '0';
             setTimeout(() => {
-                appFrame.src = "about:blank";
+                // ล้างข้อมูลทั้งหมดจริงๆ (ลบ Iframe ออกจาก DOM)
+                iframeStack.innerHTML = '';
+                loadedApps = {};
+                
+                iframeStack.classList.add('hidden');
+                appHeader.classList.add('hidden');
+                noAppSelected.classList.remove('hidden');
+                
                 welcomeScreen.classList.remove('hidden');
                 setTimeout(() => {
                     welcomeScreen.style.opacity = '1';
