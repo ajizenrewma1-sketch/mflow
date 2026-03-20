@@ -3,350 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M-Flow Helper System</title>
+    <title>M-Flow Future Control Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Kanit:wght@200;400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-blue: #0062ff;
+            --bg-dark: #020617;
+            --panel-bg: rgba(15, 23, 42, 0.6);
+        }
+
         body {
             font-family: 'Kanit', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
             overflow: hidden;
-            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1545143877-4e758e65b45a?auto=format&fit=crop&q=80&w=2000');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #e2e8f0;
+            height: 100vh;
         }
 
-        .marquee-container {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            padding: 20px 0;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        .font-future { font-family: 'Orbitron', sans-serif; }
 
-        .marquee-text {
-            display: inline-block;
-            padding-left: 100%;
-            animation: marquee 15s linear infinite;
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
-        }
-
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
-
-        .m-flow-glow {
-            color: #60a5fa;
-            text-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(96, 165, 250, 0.5);
-            animation: sparkle 1.5s linear infinite alternate;
-        }
-
-        @keyframes sparkle {
-            from { opacity: 0.8; filter: brightness(1); }
-            to { opacity: 1; filter: brightness(1.5) drop-shadow(0 0 8px #60a5fa); }
+        .bg-grid {
+            background-image: 
+                linear-gradient(to right, rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
         }
 
         .sidebar {
-            width: 60px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 75px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 242, 255, 0.2);
+            position: relative;
             z-index: 50;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(96, 165, 250, 0.2);
         }
 
         .sidebar:hover {
-            width: 280px;
+            width: 300px;
+            border-right: 1px solid rgba(0, 242, 255, 0.5);
+            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
         }
-
-        .sidebar-text {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .sidebar:hover .sidebar-text {
-            opacity: 1;
-        }
-
-        /* ซ่อนแถบเลื่อนในเมนู Sidebar */
-        #sidebar-nav {
-            scrollbar-width: none; /* สำหรับ Firefox */
-            -ms-overflow-style: none;  /* สำหรับ Internet Explorer และ Edge */
-        }
-        
-        #sidebar-nav::-webkit-scrollbar {
-            display: none; /* สำหรับ Chrome, Safari และ Opera */
-        }
-
-        #app-header {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(96, 165, 250, 0.15);
-        }
-
-        .content-area {
-            flex: 1;
-            height: 100vh;
-            position: relative;
-            will-change: transform;
-        }
-
-        .app-iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white; 
-            border-radius: 1.5rem 0 0 0;
-            display: none; 
-            transform: translateZ(0);
-            backface-visibility: hidden;
-        }
-
-        .app-iframe.active {
-            display: block; 
-        }
-
-        .hidden { display: none; }
 
         .nav-item {
             position: relative;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.02);
-            margin: 4px 0;
-            cursor: pointer;
+            margin: 8px 12px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            white-space: nowrap;
         }
+
         .nav-item:hover {
-            background: rgba(96, 165, 250, 0.15);
-            box-shadow: 0 0 15px rgba(96, 165, 250, 0.1);
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            transform: translateX(5px);
         }
-        
+
         .nav-item.active-menu {
-            background: rgba(96, 165, 250, 0.25);
-            border-left: 4px solid #60a5fa;
+            background: linear-gradient(90deg, rgba(0, 242, 255, 0.2) 0%, transparent 100%);
+            border-left: 4px solid var(--neon-cyan);
+            box-shadow: -10px 0 20px rgba(0, 242, 255, 0.1);
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .app-container {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(10px);
+            will-change: transform, opacity;
+        }
+
+        .app-container.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+            background: #fff;
+        }
+
+        #sidebar-nav { scrollbar-width: none; }
+        #sidebar-nav::-webkit-scrollbar { display: none; }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 242, 255, 0.3);
+            position: absolute;
+            animation: scanline 4s linear infinite;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .text-reveal {
+            background: linear-gradient(to right, #fff 20%, #00f2ff 50%, #fff 80%);
+            background-size: 200% auto;
+            color: #000;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .led {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* Preload Status Overlay */
+        #preload-overlay {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--neon-cyan);
+            display: none;
+            z-index: 200;
         }
     </style>
 </head>
-<body class="flex">
+<body class="flex flex-row">
+    <div class="bg-grid"></div>
 
-    <!-- Section 1: Welcome Screen -->
-    <div id="welcome-screen" class="fixed inset-0 flex flex-col items-center justify-center z-[100] transition-opacity duration-700">
-        <div class="marquee-container mb-12">
-            <div class="marquee-text">
-                ยินดีต้อนรับเข้าสู่ระบบตัวช่วยการทำงาน <span class="m-flow-glow">M-Flow</span>
-            </div>
+    <!-- Section: Welcome Screen -->
+    <div id="welcome-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-1000">
+        <div class="scanline"></div>
+        <div class="mb-8 text-center">
+            <h1 class="font-future text-6xl font-bold tracking-tighter text-reveal mb-2">M-FLOW SYSTEM</h1>
+            <p class="text-cyan-500/80 tracking-[0.3em] text-lg font-medium">ระบบช่วยเหลือการทำงาน</p>
         </div>
         
-        <div class="relative group">
-            <div class="absolute -inset-1 bg-blue-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-            <button onclick="enterSystem()" class="relative bg-blue-600 hover:bg-blue-500 text-white px-12 py-4 rounded-full text-xl font-semibold shadow-2xl transform transition hover:scale-105 active:scale-95 border border-blue-400/30">
-                เข้าสู่ระบบ
+        <div class="relative group cursor-pointer" onclick="enterSystem()">
+            <div class="absolute -inset-4 bg-cyan-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
+            <button id="login-btn" class="relative px-10 py-4 bg-transparent border border-cyan-500/50 text-cyan-400 rounded-full hover:bg-cyan-500 hover:text-white transition-all duration-300 tracking-widest overflow-hidden">
+                <span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าสู่ระบบ</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             </button>
         </div>
     </div>
 
-    <!-- Section 2: Main Application Interface -->
-    <div id="main-app" class="flex w-full h-screen hidden opacity-0 transition-opacity duration-700">
-        
-        <!-- Sidebar Menu -->
-        <aside class="sidebar text-white flex flex-col h-full shadow-2xl overflow-hidden">
-            <div onclick="goBackHome()" title="กลับหน้าแรกและล้างข้อมูลทั้งหมด" class="p-4 flex items-center mb-6 border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors group">
-                <div class="w-8 h-8 bg-blue-500 rounded-lg flex-shrink-0 flex items-center justify-center font-bold shadow-[0_0_15px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-transform">M</div>
-                <span class="sidebar-text ml-4 font-bold text-lg tracking-wider text-blue-400 group-hover:text-blue-300">M-FLOW HUB</span>
-            </div>
-
-            <nav id="sidebar-nav" class="flex-1 space-y-1 overflow-y-auto px-2">
-                <!-- Navigation Buttons -->
-                <button onclick="switchApp('sla', 'https://sla-temp.vercel.app/')" data-id="sla" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">⏱️</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">SLA 3 ชั่วโมง</span>
-                </button>
-                <button onclick="switchApp('r05', 'https://r05-vs-tcvs.vercel.app/')" data-id="r05" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📊</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">ชนข้อมูลต่างๆ</span>
-                </button>
-                <button onclick="switchApp('dispute-find', 'https://dispult.vercel.app/')" data-id="dispute-find" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">🔍</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">หาเหตุผลที่ไม่เจอ TCVS</span>
-                </button>
-                <button onclick="switchApp('pinai', 'https://pinai.vercel.app/')" data-id="pinai" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📜</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">ทำพินัย</span>
-                </button>
-                <button onclick="switchApp('multi-dis', 'https://multi-dispul.vercel.app/')" data-id="multi-dis" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">🚗</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">การทำโต้แย้งหลายทะเบียน</span>
-                </button>
-                <button onclick="switchApp('single-dis', 'https://dupit.netlify.app/')" data-id="single-dis" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📍</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">การทำโต้แย้งทีละ 1 ทะเบียน</span>
-                </button>
-                <button onclick="switchApp('log-l', 'https://log-l.vercel.app/')" data-id="log-l" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📝</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">แยก Log L</span>
-                </button>
-                <button onclick="switchApp('tg-ยอด', 'https://tg-five-xi.vercel.app/')" data-id="tg-ยอด" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📈</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">ทำยอด TG</span>
-                </button>
-                <button onclick="switchApp('temp-press', 'https://temp3hours.vercel.app/')" data-id="temp-press" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">💡</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">ทำยอดกดน้อง Temp</span>
-                </button>
-                <button onclick="switchApp('temp-wrong', 'https://temp-wong.vercel.app/')" data-id="temp-wrong" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">⚠️</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">ลงยอดผิด Temp</span>
-                </button>
-                <button onclick="switchApp('excel-include', 'https://include-sentences.vercel.app/')" data-id="excel-include" class="nav-item w-full flex items-center p-3 rounded-xl hover:text-blue-300 transition-all duration-300 text-left">
-                    <span class="w-8 h-8 flex items-center justify-center bg-blue-500/10 rounded-lg">📂</span>
-                    <span class="sidebar-text ml-4 text-sm font-medium">รวมช่อง Excel</span>
-                </button>
-            </nav>
-
-            <div class="p-4 border-t border-white/5 opacity-40 text-[10px] text-center uppercase tracking-widest">
-                M-Flow System v3.2 (Updated)
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="content-area flex flex-col">
-            <div id="app-header" class="hidden p-3 flex justify-between items-center">
-                <button onclick="closeCurrentApp()" class="flex items-center text-blue-300 hover:text-blue-100 font-medium transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"></path></svg>
-                    กลับสู่หน้าเมนูหลัก (ไม่ล้างข้อมูล)
-                </button>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
-                        <span id="active-app-name" class="text-[10px] text-blue-300/60 uppercase tracking-[0.2em] font-bold">Terminal Active</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="no-app-selected" class="flex-1 flex flex-col items-center justify-center">
-                <div class="text-center relative">
-                    <div class="absolute -inset-20 bg-blue-500/5 blur-[100px] rounded-full"></div>
-                    <svg class="w-24 h-24 mb-6 opacity-20 mx-auto text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A2 2 0 013 15.482V5.518a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.669V15l-6 5V20z"></path>
-                    </svg>
-                    <p class="text-xl font-light tracking-[0.3em] text-blue-400/40 uppercase">เลือกเครื่องมือเพื่อเริ่มต้น</p>
-                    <p class="text-[10px] mt-2 text-blue-300/20 italic">ระบบรันแยก Iframe เพื่อป้องกันข้อมูลหายและเพิ่มความเสถียร</p>
-                </div>
-            </div>
-
-            <div id="iframe-stack" class="flex-1 relative hidden overflow-hidden">
-                <!-- Iframes will be generated here dynamically -->
-            </div>
-        </main>
+    <!-- Preload Status Overlay -->
+    <div id="preload-overlay">
+        <div class="flex items-center gap-3">
+            <div class="animate-spin h-4 w-4 border-2 border-cyan-500 border-t-transparent rounded-full"></div>
+            <span class="text-xs text-cyan-400 font-future">PRELOADING NEURAL LINKS... <span id="preload-count">0</span>%</span>
+        </div>
     </div>
 
-    <script>
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const mainApp = document.getElementById('main-app');
-        const iframeStack = document.getElementById('iframe-stack');
-        const noAppSelected = document.getElementById('no-app-selected');
-        const appHeader = document.getElementById('app-header');
-        const activeAppName = document.getElementById('active-app-name');
-        
-        let loadedApps = {};
+    <!-- Section: Sidebar -->
+    <aside id="main-sidebar" class="sidebar flex flex-col hidden overflow-hidden">
+        <!-- ปุ่ม M-FLOW: ปรับเป็น Soft Confirm Logout (ทำงานได้ทุก Browser) -->
+        <div id="logout-trigger" class="h-20 flex items-center px-5 mb-4 border-b border-cyan-500/10 cursor-pointer hover:bg-red-500/10 transition-all group" onclick="handleLogoutClick()">
+            <div id="logout-icon-box" class="min-w-[40px] h-10 flex items-center justify-center bg-cyan-600 rounded-lg shadow-[0_0_15px_rgba(0,242,255,0.4)] transition-all">
+                <svg id="logout-svg" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </div>
+            <div class="sidebar-text ml-4 opacity-0 transition-opacity duration-300">
+                <p id="logout-label-main" class="font-future font-bold text-cyan-400 leading-none">M-FLOW</p>
+                <p id="logout-label-sub" class="text-[9px] text-slate-500 tracking-tighter uppercase">Neural Link Established</p>
+            </div>
+        </div>
 
-        function enterSystem() {
-            welcomeScreen.style.opacity = '0';
-            setTimeout(() => {
-                welcomeScreen.classList.add('hidden');
-                mainApp.classList.remove('hidden');
-                setTimeout(() => {
-                    mainApp.style.opacity = '1';
-                }, 50);
-            }, 700);
+        <nav id="sidebar-nav" class="flex-1 overflow-y-auto space-y-1">
+            <div id="nav-container"></div>
+        </nav>
+
+        <div class="p-4 border-t border-cyan-500/10 text-center cursor-pointer hover:bg-red-500/10 transition-colors" onclick="hardReset()">
+            <div class="sidebar-text opacity-0 text-[9px] text-slate-600 uppercase tracking-widest mb-2">Hard System Reset</div>
+            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                <div class="bg-cyan-500 h-full w-1/3 shadow-[0_0_8px_#00f2ff]"></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Section: Main UI -->
+    <main id="main-content" class="flex-1 flex flex-col relative hidden p-4">
+        <header id="top-bar" class="flex justify-between items-center mb-4 px-2 hidden">
+            <div class="flex items-center gap-4">
+                <button onclick="closeCurrentApp()" class="p-2 glass-panel hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <div>
+                    <h2 id="display-title" class="font-future text-cyan-400 text-lg uppercase tracking-wider leading-none">Command Center</h2>
+                    <span class="text-[10px] text-slate-500 font-future uppercase">Neural Link: <span class="text-green-500 font-bold">ACTIVE (SYNCED)</span></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-6 glass-panel px-6 py-2">
+                <div class="flex flex-col items-end">
+                    <span class="text-[9px] text-slate-500 uppercase tracking-tighter leading-none">System Status</span>
+                    <span class="text-xs font-future text-cyan-300">FULLY OPERATIONAL</span>
+                </div>
+                <div class="led text-green-500 bg-current"></div>
+            </div>
+        </header>
+
+        <div id="desktop-grid" class="flex-1 flex flex-col items-center justify-center">
+            <div class="text-center relative">
+                <div class="absolute -inset-40 bg-cyan-500/5 blur-[120px] rounded-full"></div>
+                <div class="mb-6 relative inline-block">
+                    <svg class="w-32 h-32 text-cyan-500/10 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5" d="M12 21a9 9 0 100-18 9 9 0 000 18z"></path></svg>
+                    <svg class="w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-cyan-500/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A2 2 0 013 15.482V5.518a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.669V15l-6 5V20z"></path></svg>
+                </div>
+                <h3 class="font-future text-2xl text-cyan-400/30 tracking-[0.4em] uppercase">Ready for Deployment</h3>
+                <p class="text-[10px] mt-4 text-slate-600 font-future tracking-widest italic animate-pulse">All systems preloaded. Select a module from sidebar.</p>
+            </div>
+        </div>
+
+        <div id="stack-container" class="flex-1 relative hidden rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+            <!-- Iframes injected here -->
+        </div>
+    </main>
+
+    <script>
+        const APPS = [
+            { id: 'sla', name: 'SLA 3 ชั่วโมง', url: 'https://sla-temp.vercel.app/', icon: '⏱️' },
+            { id: 'r05', name: 'ชนข้อมูลต่างๆ', url: 'https://r05-vs-tcvs.vercel.app/', icon: '📊' },
+            { id: 'dispute-find', name: 'หาเหตุผลไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
+            { id: 'pinai', name: 'ทำพินัย', url: 'https://pinai.vercel.app/', icon: '📜' },
+            { id: 'multi-dis', name: 'โต้แย้งหลายทะเบียน', url: 'https://multi-dispul.vercel.app/', icon: '🚗' },
+            { id: 'single-dis', name: 'โต้แย้ง 1 ทะเบียน', url: 'https://dupit.netlify.app/', icon: '📍' },
+            { id: 'log-l', name: 'แยก Log L', url: 'https://log-l.vercel.app/', icon: '📝' },
+            { id: 'tg-ยอด', name: 'ทำยอด TG', url: 'https://tg-five-xi.vercel.app/', icon: '📈' },
+            { id: 'temp-press', name: 'ทำยอดกดน้อง Temp', url: 'https://temp3hours.vercel.app/', icon: '💡' },
+            { id: 'temp-wrong', name: 'ลงยอดผิด Temp', url: 'https://temp-wong.vercel.app/', icon: '⚠️' },
+            { id: 'excel-include', name: 'รวมช่อง Excel', url: 'https://include-sentences.vercel.app/', icon: '📂' }
+        ];
+
+        let loadedApps = {};
+        let isPreloaded = false;
+        let logoutConfirmState = false;
+        let logoutTimeout = null;
+
+        window.onload = () => {
+            const navContainer = document.getElementById('nav-container');
+            APPS.forEach(app => {
+                const btn = document.createElement('button');
+                btn.className = 'nav-item w-full flex items-center hover:text-cyan-300 transition-all';
+                btn.onclick = () => switchApp(app.id, app.name);
+                btn.setAttribute('data-id', app.id);
+                btn.innerHTML = `
+                    <span class="min-w-[32px] h-8 flex items-center justify-center glass-panel text-lg">${app.icon}</span>
+                    <span class="sidebar-text ml-4 text-xs font-medium tracking-wide opacity-0 transition-opacity duration-300">${app.name}</span>
+                `;
+                navContainer.appendChild(btn);
+            });
+        };
+
+        // ระบบ Logout แบบ Click-to-Confirm เพื่อเลี่ยงปัญหา alert/confirm block
+        function handleLogoutClick() {
+            const iconBox = document.getElementById('logout-icon-box');
+            const mainLabel = document.getElementById('logout-label-main');
+            const subLabel = document.getElementById('logout-label-sub');
+
+            if (!logoutConfirmState) {
+                // First Click: เปลี่ยนสถานะเป็นรอยืนยัน
+                logoutConfirmState = true;
+                iconBox.classList.remove('bg-cyan-600');
+                iconBox.classList.add('bg-red-600', 'animate-bounce');
+                mainLabel.innerText = "CONFIRM?";
+                mainLabel.classList.add('text-red-500');
+                subLabel.innerText = "CLICK AGAIN TO LOGOUT";
+                subLabel.classList.add('text-red-400');
+
+                // รีเซ็ตหากไม่กดซ้ำภายใน 3 วินาที
+                logoutTimeout = setTimeout(() => {
+                    resetLogoutButton();
+                }, 3000);
+            } else {
+                // Second Click: ทำการ Logout จริง
+                clearTimeout(logoutTimeout);
+                performFullLogout();
+            }
         }
 
-        function switchApp(id, url) {
-            requestAnimationFrame(() => {
-                noAppSelected.classList.add('hidden');
-                iframeStack.classList.remove('hidden');
-                appHeader.classList.remove('hidden');
+        function resetLogoutButton() {
+            logoutConfirmState = false;
+            const iconBox = document.getElementById('logout-icon-box');
+            const mainLabel = document.getElementById('logout-label-main');
+            const subLabel = document.getElementById('logout-label-sub');
 
-                const allIframes = document.querySelectorAll('.app-iframe');
-                allIframes.forEach(iframe => {
-                    iframe.classList.remove('active');
-                });
+            iconBox.classList.remove('bg-red-600', 'animate-bounce');
+            iconBox.classList.add('bg-cyan-600');
+            mainLabel.innerText = "M-FLOW";
+            mainLabel.classList.remove('text-red-500');
+            subLabel.innerText = "Neural Link Established";
+            subLabel.classList.remove('text-red-400');
+        }
 
-                const navItems = document.querySelectorAll('.nav-item');
-                navItems.forEach(item => {
-                    if(item.getAttribute('data-id') === id) {
-                        item.classList.add('active-menu');
-                    } else {
-                        item.classList.remove('active-menu');
-                    }
-                });
-
-                if (!loadedApps[id]) {
-                    const newIframe = document.createElement('iframe');
-                    newIframe.setAttribute('loading', 'lazy');
-                    newIframe.setAttribute('allow', 'clipboard-write');
-                    newIframe.className = 'app-iframe active shadow-[0_-20px_50px_rgba(0,0,0,0.5)]';
-                    newIframe.id = `iframe-${id}`;
-                    
-                    iframeStack.appendChild(newIframe);
-                    setTimeout(() => {
-                        newIframe.src = url;
-                    }, 10);
-                    
-                    loadedApps[id] = newIframe;
-                } else {
-                    loadedApps[id].classList.add('active');
+        function performFullLogout() {
+            // 1. สั่ง Reload ทุก Iframe เพื่อล้างข้อมูล
+            Object.values(loadedApps).forEach(wrap => {
+                const ifr = wrap.querySelector('iframe');
+                if (ifr) {
+                    ifr.src = ifr.src; // Reload
                 }
+            });
 
-                activeAppName.innerText = id.toUpperCase() + " RUNNING";
+            // 2. ปิดหน้าแอปที่เปิดอยู่
+            closeCurrentApp();
+            
+            // 3. รีเซ็ตสถานะปุ่ม
+            resetLogoutButton();
+
+            // 4. กลับหน้าต้อนรับ
+            exitToWelcome();
+        }
+
+        async function preloadAllApps() {
+            if (isPreloaded) return;
+            const overlay = document.getElementById('preload-overlay');
+            const countText = document.getElementById('preload-count');
+            const container = document.getElementById('stack-container');
+            
+            overlay.style.display = 'block';
+            let completed = 0;
+
+            for (const app of APPS) {
+                if (!loadedApps[app.id]) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'app-container';
+                    wrap.id = `wrap-${app.id}`;
+                    const iframe = document.createElement('iframe');
+                    iframe.setAttribute('allow', 'clipboard-write');
+                    iframe.setAttribute('loading', 'eager');
+                    wrap.appendChild(iframe);
+                    container.appendChild(wrap);
+                    iframe.src = app.url;
+                    loadedApps[app.id] = wrap;
+                    await new Promise(r => setTimeout(r, 150)); 
+                    completed++;
+                    countText.innerText = Math.round((completed / APPS.length) * 100);
+                }
+            }
+            isPreloaded = true;
+            setTimeout(() => overlay.style.display = 'none', 1000);
+        }
+
+        async function enterSystem() {
+            const welcome = document.getElementById('welcome-screen');
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.innerHTML = '<span class="animate-pulse">BOOTING NEURAL LINKS...</span>';
+            await preloadAllApps();
+            welcome.style.transform = 'translateY(-100%)';
+            setTimeout(() => {
+                welcome.classList.add('hidden');
+                document.getElementById('main-sidebar').classList.remove('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                document.getElementById('main-content').style.opacity = '1';
+            }, 800);
+        }
+
+        function exitToWelcome() {
+            const welcome = document.getElementById('welcome-screen');
+            const mainSidebar = document.getElementById('main-sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            mainContent.style.opacity = '0';
+            mainSidebar.style.opacity = '0';
+            document.getElementById('login-btn').innerHTML = '<span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าสู่ระบบ</span>';
+
+            setTimeout(() => {
+                welcome.classList.remove('hidden');
+                welcome.style.transform = 'translateY(0)';
+                mainSidebar.classList.add('hidden');
+                mainContent.classList.add('hidden');
+                mainSidebar.style.opacity = '1';
+                mainContent.style.opacity = '1';
+            }, 400);
+        }
+
+        function switchApp(id, name) {
+            requestAnimationFrame(() => {
+                document.getElementById('desktop-grid').classList.add('hidden');
+                document.getElementById('stack-container').classList.remove('hidden');
+                document.getElementById('top-bar').classList.remove('hidden');
+                document.getElementById('display-title').innerText = name;
+                document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
+                const activeNav = document.querySelector(`[data-id="${id}"]`);
+                if(activeNav) activeNav.classList.add('active-menu');
+                if (loadedApps[id]) loadedApps[id].classList.add('active');
             });
         }
 
         function closeCurrentApp() {
-            iframeStack.classList.add('hidden');
-            appHeader.classList.add('hidden');
-            noAppSelected.classList.remove('hidden');
-            
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active-menu'));
-
-            const allIframes = document.querySelectorAll('.app-iframe');
-            allIframes.forEach(iframe => iframe.classList.remove('active'));
+            document.getElementById('stack-container').classList.add('hidden');
+            document.getElementById('top-bar').classList.add('hidden');
+            document.getElementById('desktop-grid').classList.remove('hidden');
+            document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
         }
 
-        function goBackHome() {
-            mainApp.style.opacity = '0';
-            setTimeout(() => {
-                iframeStack.innerHTML = '';
-                loadedApps = {};
-                
-                iframeStack.classList.add('hidden');
-                appHeader.classList.add('hidden');
-                noAppSelected.classList.remove('hidden');
-                
-                welcomeScreen.classList.remove('hidden');
-                setTimeout(() => {
-                    welcomeScreen.style.opacity = '1';
-                    mainApp.classList.add('hidden');
-                }, 50);
-            }, 700);
+        function hardReset() {
+            window.location.reload();
         }
 
-        window.addEventListener('beforeunload', () => {
-            iframeStack.innerHTML = '';
+        const sidebar = document.getElementById('main-sidebar');
+        sidebar.addEventListener('mouseenter', () => {
+            document.querySelectorAll('.sidebar-text').forEach(el => el.style.opacity = '1');
+        });
+        sidebar.addEventListener('mouseleave', () => {
+            document.querySelectorAll('.sidebar-text').forEach(el => el.style.opacity = '0');
         });
     </script>
 </body>
