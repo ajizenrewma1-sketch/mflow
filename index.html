@@ -41,29 +41,77 @@
         /* Sidebar Styling */
         .sidebar {
             width: 75px;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             background: rgba(2, 6, 23, 0.8);
             backdrop-filter: blur(20px);
             border-right: 1px solid rgba(0, 242, 255, 0.2);
             position: relative;
             z-index: 50;
-            overflow: hidden; 
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: none;
         }
+        
+        .sidebar::-webkit-scrollbar { display: none; }
 
         .sidebar:hover {
-            width: 300px;
+            width: 320px;
             border-right: 1px solid rgba(0, 242, 255, 0.5);
             box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
         }
 
+        /* Menu Group Styling */
+        .menu-group {
+            margin: 4px 8px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .menu-group-title {
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        /* Show sub-menu on group hover */
+        .sub-menu-container {
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            margin-left: 20px;
+            border-left: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .menu-group:hover .menu-group-title {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+        }
+
+        .menu-group:hover .sub-menu-container {
+            max-height: 500px; /* Large enough to hold items */
+            opacity: 1;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        /* Nav Items inside group */
         .nav-item {
             position: relative;
-            margin: 4px 12px;
+            margin: 4px 12px 4px 0;
             padding: 10px;
-            border-radius: 12px;
+            border-radius: 0 12px 12px 0;
             transition: all 0.3s;
             border: 1px solid transparent;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            width: calc(100% - 12px);
         }
 
         .nav-item:hover {
@@ -74,17 +122,8 @@
 
         .nav-item.active-menu {
             background: linear-gradient(90deg, rgba(0, 242, 255, 0.2) 0%, transparent 100%);
-            border-left: 4px solid var(--neon-cyan);
+            border-left: 3px solid var(--neon-cyan);
             box-shadow: -10px 0 20px rgba(0, 242, 255, 0.1);
-        }
-
-        /* Submenu styling if needed */
-        .nav-item.sub-item {
-            margin-left: 24px;
-            padding: 8px 10px;
-            opacity: 0.8;
-            border-left: 1px dashed rgba(0, 242, 255, 0.3);
-            border-radius: 0 12px 12px 0;
         }
 
         .glass-panel {
@@ -130,9 +169,7 @@
             display: flex;
         }
 
-        #quick-note-panel.open {
-            right: 0;
-        }
+        #quick-note-panel.open { right: 0; }
 
         .note-toggle {
             width: 40px;
@@ -167,7 +204,6 @@
             box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
         #quick-note-area {
@@ -184,22 +220,7 @@
             resize: none;
             scrollbar-width: none;
         }
-
-        #quick-note-area::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* Scrollbar Sidebar */
-        #sidebar-nav { 
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            overflow-y: auto;
-            padding-bottom: 20px;
-        }
-        
-        #sidebar-nav::-webkit-scrollbar { 
-            display: none;
-        }
+        #quick-note-area::-webkit-scrollbar { display: none; }
 
         /* --- UI Effects --- */
         @keyframes pulse-yellow {
@@ -266,6 +287,12 @@
             text-align: center;
             box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
         }
+        
+        .center-absolute {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
     </style>
 </head>
 <body class="flex flex-row">
@@ -313,7 +340,7 @@
             <div class="mb-6">
                 <div class="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                 <h2 class="font-future text-2xl text-cyan-400 mb-2 uppercase tracking-widest">LOGGING OUT</h2>
-                <p class="text-slate-400 text-sm">ออกจากระบบเรียบร้อยแล้ว กำลังกลับสู่หน้าแรก...</p>
+                <p class="text-slate-400 text-sm">กำลังลงชื่อออกกรุณารอสักครู่...</p>
             </div>
             <div class="w-64 bg-slate-800 h-1.5 rounded-full overflow-hidden mx-auto border border-white/5">
                 <div id="logout-progress" class="bg-cyan-500 h-full w-0 transition-all duration-[3000ms] ease-linear"></div>
@@ -331,7 +358,7 @@
 
     <!-- Sidebar -->
     <aside id="main-sidebar" class="sidebar flex flex-col hidden">
-        <div id="logout-trigger" class="h-20 flex items-center px-5 mb-4 border-b border-cyan-500/10 cursor-pointer hover:bg-red-500/10 transition-all group" onclick="handleLogoutClick()">
+        <div id="logout-trigger" class="h-20 flex items-center px-4 mb-2 mt-2 border-b border-cyan-500/10 cursor-pointer hover:bg-red-500/10 transition-all group" onclick="handleLogoutClick()">
             <div id="logout-icon-box" class="min-w-[40px] h-10 flex items-center justify-center bg-cyan-600 rounded-lg shadow-[0_0_15px_rgba(0,242,255,0.4)] transition-all">
                 <svg id="logout-svg" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </div>
@@ -342,7 +369,7 @@
         </div>
 
         <!-- Sidebar Navigation Area -->
-        <nav id="sidebar-nav" class="flex-1 space-y-1">
+        <nav id="sidebar-nav" class="flex-1 space-y-1 pb-4">
             <div id="nav-container"></div>
         </nav>
 
@@ -363,8 +390,8 @@
                 <div class="flex items-center gap-3">
                     <span class="text-2xl animate-bounce">🔔</span>
                     <div>
-                        <h4 class="font-future text-yellow-400 text-sm font-bold uppercase">แจ้งเตือนรอบ SLA 3 ชั่วโมง</h4>
-                        <p class="text-[10px] text-yellow-200/70 tracking-wide">ขณะนี้ถึงรอบเวลาตรวจสอบข้อมูลแล้ว (06, 09, 12, 15, 18, 21)</p>
+                        <h4 class="font-future text-yellow-400 text-sm font-bold uppercase">แจ้งเตือนรอบทำยอด</h4>
+                        <p class="text-[10px] text-yellow-200/70 tracking-wide">ขณะนี้ถึงรอบเวลาตรวจสอบ SLA 3 ชั่วโมงแล้ว กรุณาอัปเดตข้อมูล</p>
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -374,26 +401,29 @@
             </div>
         </div>
 
-        <header id="top-bar" class="flex justify-between items-center mb-4 px-2 hidden">
-            <div class="flex items-center gap-4">
+        <header id="top-bar" class="flex justify-between items-center mb-4 px-2 hidden relative h-12">
+            <!-- Left Info -->
+            <div class="flex items-center gap-4 z-10">
                 <button onclick="closeCurrentApp()" class="p-2 glass-panel hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 </button>
                 <div>
-                    <h2 id="display-title" class="font-future text-cyan-400 text-sm uppercase tracking-wider leading-none">ศูนย์ควบคุมระบบ</h2>
-                    <span class="text-[8px] text-slate-500 font-future uppercase">สถานะการเชื่อมต่อ: <span class="text-green-500 font-bold">ปกติ</span></span>
+                    <h2 id="display-title" class="font-future text-cyan-400 text-sm uppercase tracking-wider leading-none mt-1">หน้าหลัก</h2>
+                    <span class="text-[9px] text-slate-500 font-future uppercase">M-FLOW <span class="text-cyan-500">WORKSPACE</span></span>
                 </div>
             </div>
 
-            <div class="flex-1 flex justify-center">
-                <div class="glass-panel px-4 py-1.5 flex items-center gap-3 border-cyan-500/20 shadow-[0_0_10px_rgba(0,242,255,0.05)]">
-                    <div id="digital-clock" class="font-future text-lg font-bold text-cyan-400 tracking-wider min-w-[100px] text-center">00:00:00</div>
-                    <div class="w-[1px] h-4 bg-slate-700"></div>
-                    <div id="current-date" class="text-[9px] font-future text-slate-400 tracking-widest uppercase">-- / -- / ----</div>
+            <!-- Center Clock & Date -->
+            <div class="center-absolute z-0 flex justify-center">
+                <div class="glass-panel px-6 py-2 flex items-center gap-4 border-cyan-500/20 shadow-[0_0_15px_rgba(0,242,255,0.05)]">
+                    <div id="digital-clock" class="font-future text-xl font-bold text-cyan-400 tracking-widest min-w-[110px] text-center">00:00:00</div>
+                    <div class="w-[1px] h-5 bg-slate-600"></div>
+                    <div id="current-date" class="text-xs font-future text-slate-300 tracking-wider uppercase">-- / -- / ----</div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4 glass-panel px-4 py-1.5">
+            <!-- Right Status -->
+            <div class="flex items-center gap-4 glass-panel px-4 py-1.5 z-10">
                 <div class="flex flex-col items-end">
                     <span class="text-[8px] text-slate-500 uppercase tracking-tighter leading-none">เซิร์ฟเวอร์</span>
                     <span class="text-[10px] font-future text-cyan-300">ออนไลน์</span>
@@ -410,7 +440,7 @@
                     <svg class="w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A2 2 0 013 15.482V5.518a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.669V15l-6 5V20z"></path></svg>
                 </div>
                 <h3 class="font-future text-2xl text-cyan-400/30 tracking-[0.4em] uppercase">ระบบพร้อมใช้งาน</h3>
-                <p class="text-[10px] mt-4 text-slate-600 font-future tracking-widest italic animate-pulse">กรุณาเลือกโมดูลที่ต้องการจากแถบเมนูด้านซ้าย</p>
+                <p class="text-[11px] mt-4 text-slate-500 tracking-widest animate-pulse">เลื่อนเมาส์ไปที่แถบด้านซ้ายเพื่อเลือกโหมดการทำงาน</p>
             </div>
         </div>
 
@@ -418,19 +448,41 @@
     </main>
 
     <script>
-        const APPS = [
-            { id: 'sla', name: 'SLA 3 ชั่วโมง', url: 'https://sla-temp.vercel.app/', icon: '⏱️' },
-            { id: 'r05', name: 'ชนข้อมูลต่างๆ', url: 'https://r05-vs-tcvs.vercel.app/', icon: '📊' },
-            { id: 'r05-8gb', name: 'ชนข้อมูลสำหรับแรม 8 GB', url: 'https://r05-tcvs-v2.vercel.app/', icon: '⚡', sub: true },
-            { id: 'dispute-find', name: 'หาเหตุผลไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
-            { id: 'pinai', name: 'ทำพินัย', url: 'https://pinai.vercel.app/', icon: '📜' },
-            { id: 'multi-dis', name: 'โต้แย้งหลายทะเบียน', url: 'https://multi-dispul.vercel.app/', icon: '🚗' },
-            { id: 'single-dis', name: 'โต้แย้ง 1 ทะเบียน', url: 'https://dupit.netlify.app/', icon: '📍' },
-            { id: 'log-l', name: 'แยก Log L', url: 'https://log-l.vercel.app/', icon: '📝' },
-            { id: 'tg-ยอด', name: 'ทำยอด TG', url: 'https://tg-five-xi.vercel.app/', icon: '📈' },
-            { id: 'temp-press', name: 'ทำยอดกดน้อง Temp', url: 'https://temp3hours.vercel.app/', icon: '💡' },
-            { id: 'temp-wrong', name: 'ลงยอดผิด Temp', url: 'https://temp-wong.vercel.app/', icon: '⚠️' },
-            { id: 'excel-include', name: 'รวมช่อง Excel', url: 'https://include-sentences.vercel.app/', icon: '📂' }
+        // Data Structure Grouping
+        const MENU_GROUPS = [
+            {
+                id: 'grp-data',
+                name: 'กลุ่มชนข้อมูล',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>',
+                items: [
+                    { id: 'r05', name: 'ชนข้อมูลต่างๆ', url: 'https://r05-vs-tcvs.vercel.app/', icon: '📊' },
+                    { id: 'r05-8gb', name: 'ชนข้อมูลสำหรับแรม 8 GB', url: 'https://r05-tcvs-v2.vercel.app/', icon: '⚡' },
+                    { id: 'dispute-find', name: 'หาสาเหตุไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
+                    { id: 'excel-include', name: 'รวมช่อง Excel', url: 'https://include-sentences.vercel.app/', icon: '📂' }
+                ]
+            },
+            {
+                id: 'grp-dispute',
+                name: 'กลุ่มการทำโต้แย้ง',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+                items: [
+                    { id: 'pinai', name: 'ทำพินัย', url: 'https://pinai.vercel.app/', icon: '📜' },
+                    { id: 'multi-dis', name: 'โต้แย้งหลายทะเบียน', url: 'https://multi-dispul.vercel.app/', icon: '🚗' },
+                    { id: 'single-dis', name: 'โต้แย้ง 1 ทะเบียน', url: 'https://dupit.netlify.app/', icon: '📍' },
+                    { id: 'log-l', name: 'แยก Log L', url: 'https://log-l.vercel.app/', icon: '📝' }
+                ]
+            },
+            {
+                id: 'grp-daily',
+                name: 'การทำงานทั่วไปประจำวัน',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                items: [
+                    { id: 'sla', name: 'SLA 3 ชั่วโมง', url: 'https://sla-temp.vercel.app/', icon: '⏱️' },
+                    { id: 'tg-ยอด', name: 'ทำยอด TG', url: 'https://tg-five-xi.vercel.app/', icon: '📈' },
+                    { id: 'temp-press', name: 'ทำยอดกดน้อง Temp', url: 'https://temp3hours.vercel.app/', icon: '💡' },
+                    { id: 'temp-wrong', name: 'ลงยอดผิด Temp', url: 'https://temp-wong.vercel.app/', icon: '⚠️' }
+                ]
+            }
         ];
 
         let loadedApps = {};
@@ -438,7 +490,7 @@
         let logoutConfirmState = false;
         let logoutTimeout = null;
         let lastAlertHour = -1; 
-        const SLA_HOURS = [6, 9, 12, 15, 18, 21];
+        const SLA_HOURS = [6, 9, 12, 15, 18, 21, 23];
 
         // --- Quick Note Functions ---
         function toggleQuickNote() {
@@ -456,7 +508,11 @@
             if (!("Notification" in window)) return;
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    new Notification("ระบบ M-FLOW", { body: "เปิดใช้งานการแจ้งเตือนสำเร็จ (จะแจ้งเตือนเมื่อเปิดหน้านี้ค้างไว้เท่านั้น)", icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
+                    new Notification("ระบบ M-FLOW", { 
+                        body: "เปิดใช้งานการแจ้งเตือนสำเร็จ (จะแจ้งเตือนเมื่อเปิดหน้านี้ค้างไว้เท่านั้น)", 
+                        icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
+                        silent: true
+                    });
                 }
             });
         }
@@ -469,7 +525,7 @@
             
             document.getElementById('digital-clock').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            document.getElementById('current-date').innerText = `${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+            document.getElementById('current-date').innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
             
             if (SLA_HOURS.includes(h) && m === 0 && s === 0 && lastAlertHour !== h) {
                 showSlaAlert();
@@ -477,31 +533,68 @@
                     new Notification("แจ้งเตือน SLA 3 ชั่วโมง", { 
                         body: "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA",
                         icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
-                        tag: 'sla-notification'
+                        tag: 'sla-notification',
+                        silent: true // ตั้งค่าไม่มีเสียง
                     });
                 }
                 lastAlertHour = h;
             }
         }
+        
+        function getDayName(dayIndex) {
+            const days = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+            return days[dayIndex];
+        }
 
         function showSlaAlert() { document.getElementById('sla-alert').classList.remove('hidden'); }
         function hideSlaAlert() { document.getElementById('sla-alert').classList.add('hidden'); }
 
+        // Initializer
         window.onload = () => {
             setInterval(updateClock, 1000);
             updateClock();
             
             const navContainer = document.getElementById('nav-container');
-            APPS.forEach(app => {
-                const btn = document.createElement('button');
-                // เพิ่มคลาส sub-item สำหรับเมนูย่อย
-                const baseClass = 'nav-item w-full flex items-center hover:text-cyan-300 transition-all';
-                btn.className = app.sub ? `${baseClass} sub-item` : baseClass;
+            
+            // Build Menu UI from Groups
+            MENU_GROUPS.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'menu-group';
                 
-                btn.onclick = () => switchApp(app.id, app.name);
-                btn.setAttribute('data-id', app.id);
-                btn.innerHTML = `<span class="min-w-[32px] h-8 flex items-center justify-center glass-panel ${app.sub ? 'text-sm' : 'text-lg'}">${app.icon}</span><span class="sidebar-text ml-4 text-xs font-medium tracking-wide opacity-0 transition-opacity duration-300">${app.name}</span>`;
-                navContainer.appendChild(btn);
+                // Group Header
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'menu-group-title';
+                groupTitle.innerHTML = `
+                    <span class="min-w-[40px] h-10 flex items-center justify-center glass-panel text-cyan-400">
+                        ${group.icon}
+                    </span>
+                    <span class="sidebar-text ml-4 text-[13px] font-bold tracking-wide text-cyan-100 opacity-0 transition-opacity duration-300">
+                        ${group.name}
+                    </span>
+                    <span class="sidebar-text ml-auto opacity-0 text-cyan-500/50">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </span>
+                `;
+                
+                // Sub-menu Container
+                const subMenu = document.createElement('div');
+                subMenu.className = 'sub-menu-container';
+                
+                group.items.forEach(app => {
+                    const btn = document.createElement('button');
+                    btn.className = 'nav-item';
+                    btn.onclick = () => switchApp(app.id, app.name);
+                    btn.setAttribute('data-id', app.id);
+                    btn.innerHTML = `
+                        <span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span>
+                        <span class="sidebar-text ml-3 text-xs text-slate-300 font-medium tracking-wide opacity-0 transition-opacity duration-300">${app.name}</span>
+                    `;
+                    subMenu.appendChild(btn);
+                });
+                
+                groupDiv.appendChild(groupTitle);
+                groupDiv.appendChild(subMenu);
+                navContainer.appendChild(groupDiv);
             });
         };
 
@@ -526,16 +619,19 @@
             document.getElementById('desktop-grid').classList.add('hidden');
             document.getElementById('stack-container').classList.remove('hidden');
             document.getElementById('display-title').innerText = name;
+            
             document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
+            
             const activeNav = document.querySelector(`[data-id="${id}"]`);
             if(activeNav) activeNav.classList.add('active-menu');
+            
             if (loadedApps[id]) loadedApps[id].classList.add('active');
         }
 
         function closeCurrentApp() {
             document.getElementById('stack-container').classList.add('hidden');
-            document.getElementById('display-title').innerText = "ศูนย์ควบคุมระบบ";
+            document.getElementById('display-title').innerText = "หน้าหลัก";
             document.getElementById('desktop-grid').classList.remove('hidden');
             document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
@@ -547,7 +643,11 @@
             const container = document.getElementById('stack-container');
             overlay.classList.remove('hidden');
             let completed = 0;
-            for (const app of APPS) {
+            
+            // Get all items flat array
+            const allApps = MENU_GROUPS.flatMap(g => g.items);
+
+            for (const app of allApps) {
                 if (!loadedApps[app.id]) {
                     const wrap = document.createElement('div');
                     wrap.className = 'app-container';
@@ -558,9 +658,9 @@
                     container.appendChild(wrap);
                     iframe.src = app.url;
                     loadedApps[app.id] = wrap;
-                    await new Promise(r => setTimeout(r, 80)); 
+                    await new Promise(r => setTimeout(r, 60)); 
                     completed++;
-                    document.getElementById('preload-count').innerText = Math.round((completed / APPS.length) * 100);
+                    document.getElementById('preload-count').innerText = Math.round((completed / allApps.length) * 100);
                 }
             }
             isPreloaded = true;
@@ -583,13 +683,27 @@
             overlay.style.display = 'flex';
             setTimeout(() => progress.style.width = '100%', 50);
 
+            // Time delay for 3 seconds before clearing and returning
             setTimeout(() => {
+                // Clear all IFRAME data by resetting src (force reload them)
+                for (let id in loadedApps) {
+                    let iframe = loadedApps[id].querySelector('iframe');
+                    let currentUrl = iframe.src;
+                    iframe.src = 'about:blank'; // clear
+                    setTimeout(() => { iframe.src = currentUrl; }, 100); // reload
+                }
+                
+                // Clear Quick Note
+                document.getElementById('quick-note-area').value = '';
+
+                // Return to welcome screen
                 document.getElementById('welcome-screen').classList.remove('hidden');
                 document.getElementById('welcome-screen').style.transform = 'translateY(0)';
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-content').classList.add('hidden');
                 document.getElementById('top-bar').classList.add('hidden');
                 closeCurrentApp();
+                
                 overlay.style.display = 'none';
                 progress.style.width = '0';
                 resetLogoutButton();
@@ -601,6 +715,7 @@
             document.getElementById('logout-icon-box').classList.remove('bg-red-600', 'animate-pulse');
         }
 
+        // Handle text opacity on sidebar hover
         const sidebar = document.getElementById('main-sidebar');
         sidebar.addEventListener('mouseenter', () => document.querySelectorAll('.sidebar-text').forEach(el => el.style.opacity = '1'));
         sidebar.addEventListener('mouseleave', () => document.querySelectorAll('.sidebar-text').forEach(el => el.style.opacity = '0'));
