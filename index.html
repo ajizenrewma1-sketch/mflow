@@ -58,8 +58,8 @@
 
         .nav-item {
             position: relative;
-            margin: 8px 12px;
-            padding: 12px;
+            margin: 4px 12px;
+            padding: 10px;
             border-radius: 12px;
             transition: all 0.3s;
             border: 1px solid transparent;
@@ -76,6 +76,15 @@
             background: linear-gradient(90deg, rgba(0, 242, 255, 0.2) 0%, transparent 100%);
             border-left: 4px solid var(--neon-cyan);
             box-shadow: -10px 0 20px rgba(0, 242, 255, 0.1);
+        }
+
+        /* Submenu styling if needed */
+        .nav-item.sub-item {
+            margin-left: 24px;
+            padding: 8px 10px;
+            opacity: 0.8;
+            border-left: 1px dashed rgba(0, 242, 255, 0.3);
+            border-radius: 0 12px 12px 0;
         }
 
         .glass-panel {
@@ -180,11 +189,12 @@
             display: none;
         }
 
-        /* ซ่อน Scrollbar ของแถบเมนูด้านซ้าย */
+        /* Scrollbar Sidebar */
         #sidebar-nav { 
             scrollbar-width: none;
             -ms-overflow-style: none;
             overflow-y: auto;
+            padding-bottom: 20px;
         }
         
         #sidebar-nav::-webkit-scrollbar { 
@@ -411,6 +421,7 @@
         const APPS = [
             { id: 'sla', name: 'SLA 3 ชั่วโมง', url: 'https://sla-temp.vercel.app/', icon: '⏱️' },
             { id: 'r05', name: 'ชนข้อมูลต่างๆ', url: 'https://r05-vs-tcvs.vercel.app/', icon: '📊' },
+            { id: 'r05-8gb', name: 'ชนข้อมูลสำหรับแรม 8 GB', url: 'https://r05-tcvs-v2.vercel.app/', icon: '⚡', sub: true },
             { id: 'dispute-find', name: 'หาเหตุผลไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
             { id: 'pinai', name: 'ทำพินัย', url: 'https://pinai.vercel.app/', icon: '📜' },
             { id: 'multi-dis', name: 'โต้แย้งหลายทะเบียน', url: 'https://multi-dispul.vercel.app/', icon: '🚗' },
@@ -445,7 +456,6 @@
             if (!("Notification" in window)) return;
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    // แจ้งเตือนยืนยันเฉพาะตอนที่ยังเปิดหน้าเว็บอยู่
                     new Notification("ระบบ M-FLOW", { body: "เปิดใช้งานการแจ้งเตือนสำเร็จ (จะแจ้งเตือนเมื่อเปิดหน้านี้ค้างไว้เท่านั้น)", icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" });
                 }
             });
@@ -461,21 +471,13 @@
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             document.getElementById('current-date').innerText = `${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
             
-            // ตรวจสอบรอบ SLA
             if (SLA_HOURS.includes(h) && m === 0 && s === 0 && lastAlertHour !== h) {
-                
-                // --- ส่วนที่แก้ไข: ตรวจสอบว่าหน้าเว็บยังคงเปิดอยู่หรือไม่ ---
-                // Browser จะรัน JS นี้ได้ก็ต่อเมื่อ "เปิดหน้าเว็บค้างไว้" เท่านั้น
-                // แต่การเช็ค document.visibilityState จะช่วยให้มั่นใจว่าแจ้งเตือนจะทำงานแม้จะสลับไปใช้โปรแกรมอื่น
-                
-                showSlaAlert(); // แสดง Alert บนหน้าเว็บ (ถ้าเปิดอยู่)
-
-                // ยิง Notification ไปที่ Desktop (ถ้าเปิดสิทธิ์ไว้ และเปิดหน้าเว็บค้างไว้)
+                showSlaAlert();
                 if (Notification.permission === "granted") {
                     new Notification("แจ้งเตือน SLA 3 ชั่วโมง", { 
                         body: "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA",
                         icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
-                        tag: 'sla-notification' // ป้องกันการเด้งซ้ำ
+                        tag: 'sla-notification'
                     });
                 }
                 lastAlertHour = h;
@@ -492,10 +494,13 @@
             const navContainer = document.getElementById('nav-container');
             APPS.forEach(app => {
                 const btn = document.createElement('button');
-                btn.className = 'nav-item w-full flex items-center hover:text-cyan-300 transition-all';
+                // เพิ่มคลาส sub-item สำหรับเมนูย่อย
+                const baseClass = 'nav-item w-full flex items-center hover:text-cyan-300 transition-all';
+                btn.className = app.sub ? `${baseClass} sub-item` : baseClass;
+                
                 btn.onclick = () => switchApp(app.id, app.name);
                 btn.setAttribute('data-id', app.id);
-                btn.innerHTML = `<span class="min-w-[32px] h-8 flex items-center justify-center glass-panel text-lg">${app.icon}</span><span class="sidebar-text ml-4 text-xs font-medium tracking-wide opacity-0 transition-opacity duration-300">${app.name}</span>`;
+                btn.innerHTML = `<span class="min-w-[32px] h-8 flex items-center justify-center glass-panel ${app.sub ? 'text-sm' : 'text-lg'}">${app.icon}</span><span class="sidebar-text ml-4 text-xs font-medium tracking-wide opacity-0 transition-opacity duration-300">${app.name}</span>`;
                 navContainer.appendChild(btn);
             });
         };
