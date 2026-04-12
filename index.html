@@ -54,10 +54,14 @@
         
         .sidebar::-webkit-scrollbar { display: none; }
 
-        .sidebar:hover {
+        .sidebar.expanded {
             width: 320px;
             border-right: 1px solid rgba(0, 242, 255, 0.5);
             box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar.expanded .sidebar-text {
+            opacity: 1 !important;
         }
 
         /* Menu Group Styling */
@@ -88,16 +92,29 @@
             border-left: 1px solid rgba(0, 242, 255, 0.2);
         }
 
-        .menu-group:hover .menu-group-title {
+        .menu-group-title:hover {
             background: rgba(0, 242, 255, 0.05);
             border: 1px solid rgba(0, 242, 255, 0.1);
         }
 
-        .menu-group:hover .sub-menu-container {
-            max-height: 500px; /* Large enough to hold items */
+        .menu-group.open .menu-group-title {
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+        }
+
+        .menu-group.open .sub-menu-container {
+            max-height: 500px;
             opacity: 1;
             padding-top: 5px;
             padding-bottom: 5px;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        .menu-group.open .chevron {
+            transform: rotate(180deg);
         }
 
         /* Nav Items inside group */
@@ -358,18 +375,28 @@
 
     <!-- Sidebar -->
     <aside id="main-sidebar" class="sidebar flex flex-col hidden">
-        <div id="logout-trigger" class="h-20 flex items-center px-4 mb-2 mt-2 border-b border-cyan-500/10 cursor-pointer hover:bg-red-500/10 transition-all group" onclick="handleLogoutClick()">
-            <div id="logout-icon-box" class="min-w-[40px] h-10 flex items-center justify-center bg-cyan-600 rounded-lg shadow-[0_0_15px_rgba(0,242,255,0.4)] transition-all">
-                <svg id="logout-svg" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        <!-- Sidebar Toggle (Hamburger) -->
+        <div id="sidebar-toggle" class="h-16 flex items-center px-4 mt-2 cursor-pointer hover:bg-cyan-500/10 transition-all group border-b border-cyan-500/10">
+            <div class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-cyan-500/30 text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-[0_0_10px_rgba(0,242,255,0.2)]">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
             <div class="sidebar-text ml-4 opacity-0 transition-opacity duration-300">
-                <p id="logout-label-main" class="font-future font-bold text-cyan-400 leading-none">M-FLOW</p>
-                <p id="logout-label-sub" class="text-[9px] text-slate-500 tracking-tighter uppercase">เชื่อมต่อข้อมูลเรียบร้อย</p>
+                <p class="font-future font-bold text-cyan-400 leading-none uppercase tracking-widest text-lg text-nowrap">MENU HUB</p>
             </div>
         </div>
 
-        <!-- Sidebar Navigation Area -->
-        <nav id="sidebar-nav" class="flex-1 space-y-1 pb-4">
+        <!-- Logout Trigger Button -->
+        <div id="logout-trigger" class="h-16 flex items-center px-4 border-b border-cyan-500/10 cursor-pointer hover:bg-red-500/10 transition-all group" onclick="handleLogoutClick()">
+            <div id="logout-icon-box" class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-red-500/30 text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </div>
+            <div class="sidebar-text ml-4 opacity-0 transition-opacity duration-300">
+                <p class="text-xs font-bold text-red-400 uppercase tracking-tighter">ลงชื่อออก</p>
+                <p class="text-[8px] text-red-500/60 uppercase">Terminate Session</p>
+            </div>
+        </div>
+
+        <nav id="sidebar-nav" class="flex-1 space-y-1 pb-4 pt-4">
             <div id="nav-container"></div>
         </nav>
 
@@ -440,7 +467,7 @@
                     <svg class="w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A2 2 0 013 15.482V5.518a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.669V15l-6 5V20z"></path></svg>
                 </div>
                 <h3 class="font-future text-2xl text-cyan-400/30 tracking-[0.4em] uppercase">ระบบพร้อมใช้งาน</h3>
-                <p class="text-[11px] mt-4 text-slate-500 tracking-widest animate-pulse">เลื่อนเมาส์ไปที่แถบด้านซ้ายเพื่อเลือกโหมดการทำงาน</p>
+                <p class="text-[11px] mt-4 text-slate-500 tracking-widest animate-pulse">คลิกที่แถบด้านซ้ายเพื่อกางเมนูเลือกเครื่องมือ</p>
             </div>
         </div>
 
@@ -523,9 +550,12 @@
             const m = now.getMinutes();
             const s = now.getSeconds();
             
-            document.getElementById('digital-clock').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            const clockEl = document.getElementById('digital-clock');
+            if(clockEl) clockEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            document.getElementById('current-date').innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
+            const dateEl = document.getElementById('current-date');
+            if(dateEl) dateEl.innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
             
             if (SLA_HOURS.includes(h) && m === 0 && s === 0 && lastAlertHour !== h) {
                 showSlaAlert();
@@ -534,7 +564,7 @@
                         body: "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA",
                         icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
                         tag: 'sla-notification',
-                        silent: true // ตั้งค่าไม่มีเสียง
+                        silent: true
                     });
                 }
                 lastAlertHour = h;
@@ -555,6 +585,7 @@
             updateClock();
             
             const navContainer = document.getElementById('nav-container');
+            if(!navContainer) return;
             
             // Build Menu UI from Groups
             MENU_GROUPS.forEach(group => {
@@ -571,10 +602,20 @@
                     <span class="sidebar-text ml-4 text-[13px] font-bold tracking-wide text-cyan-100 opacity-0 transition-opacity duration-300">
                         ${group.name}
                     </span>
-                    <span class="sidebar-text ml-auto opacity-0 text-cyan-500/50">
+                    <span class="sidebar-text ml-auto opacity-0 text-cyan-500/50 chevron">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </span>
                 `;
+
+                groupTitle.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent sidebar closing from click bubble
+                    // ปิดกลุ่มอื่นเพื่อให้เปิดทีละกลุ่ม (Accordion)
+                    document.querySelectorAll('.menu-group').forEach(g => {
+                        if(g !== groupDiv) g.classList.remove('open');
+                    });
+                    // สลับสถานะกาง/พับกลุ่มที่คลิก
+                    groupDiv.classList.toggle('open');
+                });
                 
                 // Sub-menu Container
                 const subMenu = document.createElement('div');
@@ -583,7 +624,10 @@
                 group.items.forEach(app => {
                     const btn = document.createElement('button');
                     btn.className = 'nav-item';
-                    btn.onclick = () => switchApp(app.id, app.name);
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        switchApp(app.id, app.name);
+                    };
                     btn.setAttribute('data-id', app.id);
                     btn.innerHTML = `
                         <span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span>
@@ -627,11 +671,17 @@
             if(activeNav) activeNav.classList.add('active-menu');
             
             if (loadedApps[id]) loadedApps[id].classList.add('active');
+
+            // Auto-collapse sidebar after selection
+            const sidebar = document.getElementById('main-sidebar');
+            sidebar.classList.remove('expanded');
+            document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('open'));
         }
 
         function closeCurrentApp() {
             document.getElementById('stack-container').classList.add('hidden');
-            document.getElementById('display-title').innerText = "หน้าหลัก";
+            const titleEl = document.getElementById('display-title');
+            if(titleEl) titleEl.innerText = "หน้าหลัก";
             document.getElementById('desktop-grid').classList.remove('hidden');
             document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
@@ -644,7 +694,6 @@
             overlay.classList.remove('hidden');
             let completed = 0;
             
-            // Get all items flat array
             const allApps = MENU_GROUPS.flatMap(g => g.items);
 
             for (const app of allApps) {
@@ -660,7 +709,8 @@
                     loadedApps[app.id] = wrap;
                     await new Promise(r => setTimeout(r, 60)); 
                     completed++;
-                    document.getElementById('preload-count').innerText = Math.round((completed / allApps.length) * 100);
+                    const countEl = document.getElementById('preload-count');
+                    if(countEl) countEl.innerText = Math.round((completed / allApps.length) * 100);
                 }
             }
             isPreloaded = true;
@@ -668,9 +718,10 @@
         }
 
         function handleLogoutClick() {
+            const iconBox = document.getElementById('logout-icon-box');
             if (!logoutConfirmState) {
                 logoutConfirmState = true;
-                document.getElementById('logout-icon-box').classList.add('bg-red-600', 'animate-pulse');
+                if(iconBox) iconBox.classList.add('bg-red-600', 'animate-pulse');
                 logoutTimeout = setTimeout(() => resetLogoutButton(), 3000);
             } else {
                 executeLogout();
@@ -680,45 +731,72 @@
         function executeLogout() {
             const overlay = document.getElementById('logout-overlay');
             const progress = document.getElementById('logout-progress');
-            overlay.style.display = 'flex';
-            setTimeout(() => progress.style.width = '100%', 50);
+            if(overlay) overlay.style.display = 'flex';
+            setTimeout(() => { if(progress) progress.style.width = '100%'; }, 50);
 
-            // Time delay for 3 seconds before clearing and returning
             setTimeout(() => {
-                // Clear all IFRAME data by resetting src (force reload them)
                 for (let id in loadedApps) {
                     let iframe = loadedApps[id].querySelector('iframe');
                     let currentUrl = iframe.src;
-                    iframe.src = 'about:blank'; // clear
-                    setTimeout(() => { iframe.src = currentUrl; }, 100); // reload
+                    iframe.src = 'about:blank';
+                    setTimeout(() => { iframe.src = currentUrl; }, 100);
                 }
                 
-                // Clear Quick Note
-                document.getElementById('quick-note-area').value = '';
+                const noteArea = document.getElementById('quick-note-area');
+                if(noteArea) noteArea.value = '';
 
-                // Return to welcome screen
-                document.getElementById('welcome-screen').classList.remove('hidden');
-                document.getElementById('welcome-screen').style.transform = 'translateY(0)';
+                const welcome = document.getElementById('welcome-screen');
+                if(welcome) {
+                    welcome.classList.remove('hidden');
+                    welcome.style.transform = 'translateY(0)';
+                }
+                
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-content').classList.add('hidden');
                 document.getElementById('top-bar').classList.add('hidden');
+                
                 closeCurrentApp();
                 
-                overlay.style.display = 'none';
-                progress.style.width = '0';
+                if(overlay) overlay.style.display = 'none';
+                if(progress) progress.style.width = '0';
                 resetLogoutButton();
             }, 3000);
         }
 
         function resetLogoutButton() {
             logoutConfirmState = false;
-            document.getElementById('logout-icon-box').classList.remove('bg-red-600', 'animate-pulse');
+            const iconBox = document.getElementById('logout-icon-box');
+            if(iconBox) iconBox.classList.remove('bg-red-600', 'animate-pulse');
+            if(logoutTimeout) clearTimeout(logoutTimeout);
         }
 
-        // Handle text opacity on sidebar hover
+        // Sidebar Click-to-Expand Logic
         const sidebar = document.getElementById('main-sidebar');
-        sidebar.addEventListener('mouseenter', () => document.querySelectorAll('.sidebar-text').forEach(el => el.style.opacity = '1'));
-        sidebar.addEventListener('mouseleave', () => document.querySelectorAll('.sidebar-text').forEach(el => el.style.opacity = '0'));
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+
+        sidebar.addEventListener('click', function(e) {
+            if (!this.classList.contains('expanded') && !e.target.closest('#logout-trigger')) {
+                this.classList.add('expanded');
+                e.stopPropagation();
+            }
+        }, true);
+
+        if(sidebarToggle) {
+            sidebarToggle.addEventListener('click', (e) => {
+                if (sidebar.classList.contains('expanded')) {
+                    e.stopPropagation();
+                    sidebar.classList.remove('expanded');
+                    document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('open'));
+                }
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (sidebar && sidebar.classList.contains('expanded') && !sidebar.contains(e.target)) {
+                sidebar.classList.remove('expanded');
+                document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('open'));
+            }
+        });
     </script>
 </body>
 </html>
