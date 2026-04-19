@@ -60,7 +60,16 @@
             box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
         }
 
-        .sidebar.expanded .sidebar-text { opacity: 1 !important; }
+        .sidebar .sidebar-text { 
+            opacity: 0; 
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .sidebar.expanded .sidebar-text { 
+            opacity: 1; 
+            pointer-events: auto;
+        }
 
         .menu-group {
             margin: 4px 8px;
@@ -119,6 +128,7 @@
             display: flex;
             align-items: center;
             width: calc(100% - 12px);
+            text-align: left;
         }
 
         .nav-item:hover {
@@ -385,7 +395,6 @@
             border: none;
         }
 
-        /* Added specific transition for logout progress */
         #logout-progress {
             transition: width 1500ms linear;
         }
@@ -450,11 +459,11 @@
 
     <!-- Sidebar -->
     <aside id="main-sidebar" class="sidebar flex flex-col hidden">
-        <div id="sidebar-toggle" class="h-16 flex items-center px-4 mt-2 cursor-pointer hover:bg-cyan-500/10 transition-all group border-b border-cyan-500/10">
+        <div id="sidebar-toggle" class="h-16 flex items-center px-4 mt-2 cursor-pointer hover:bg-cyan-500/10 transition-all group border-b border-cyan-500/10" onclick="toggleSidebar()">
             <div class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-cyan-500/30 text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-[0_0_10px_rgba(0,242,255,0.2)]">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </div>
-            <div class="sidebar-text ml-4 opacity-0 transition-opacity duration-300">
+            <div class="sidebar-text ml-4">
                 <p class="font-future font-bold text-cyan-400 leading-none uppercase tracking-widest text-lg text-nowrap">MENU HUB</p>
             </div>
         </div>
@@ -463,7 +472,7 @@
             <div id="logout-icon-box" class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-red-500/30 text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </div>
-            <div class="sidebar-text ml-4 opacity-0 transition-opacity duration-300">
+            <div class="sidebar-text ml-4">
                 <p class="text-xs font-bold text-red-400 uppercase tracking-tighter">ลงชื่อออก</p>
                 <p class="text-[8px] text-red-500/60 uppercase">Terminate Session</p>
             </div>
@@ -478,7 +487,8 @@
     <main id="main-content" class="flex-1 flex flex-col relative hidden p-4">
         <header id="top-bar" class="flex justify-between items-center mb-4 px-2 relative h-12">
             <div class="flex items-center gap-4 z-10">
-                <button onclick="gotoHome()" class="p-2 glass-panel hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all">
+                <!-- Home Button with auto-collapse -->
+                <button onclick="handleHomeClick()" class="p-2 glass-panel hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 </button>
                 <div>
@@ -596,17 +606,30 @@
             updateClock();
             initNavMenu();
             initSplitResizer();
-            initSidebarBehavior();
         };
 
-        function initSidebarBehavior() {
+        function toggleSidebar() {
             const sidebar = document.getElementById('main-sidebar');
-            sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
-            sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+            sidebar.classList.toggle('expanded');
+        }
+
+        // Close Sidebar Helper
+        function closeSidebar() {
+            const sidebar = document.getElementById('main-sidebar');
+            sidebar.classList.remove('expanded');
+            document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
+        }
+
+        // Handle Home Click: Goto home and collapse sidebar
+        function handleHomeClick() {
+            gotoHome();
+            closeSidebar();
         }
 
         function initNavMenu() {
             const container = document.getElementById('nav-container');
+            const sidebar = document.getElementById('main-sidebar');
+
             MENU_GROUPS.forEach(group => {
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'menu-group';
@@ -614,11 +637,17 @@
                 title.className = 'menu-group-title';
                 title.innerHTML = `
                     <span class="min-w-[40px] h-10 flex items-center justify-center glass-panel text-cyan-400">${group.icon}</span>
-                    <span class="sidebar-text ml-4 text-[13px] font-bold text-cyan-100 opacity-0 transition-opacity duration-300">${group.name}</span>
-                    <span class="sidebar-text ml-auto opacity-0 chevron"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></span>
+                    <span class="sidebar-text ml-4 text-[13px] font-bold text-cyan-100">${group.name}</span>
+                    <span class="sidebar-text ml-auto chevron"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></span>
                 `;
                 
                 title.onclick = () => {
+                    if (!sidebar.classList.contains('expanded')) {
+                        sidebar.classList.add('expanded');
+                        groupDiv.classList.add('open');
+                        return;
+                    }
+
                     const isOpen = groupDiv.classList.contains('open');
                     document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
                     if (!isOpen) groupDiv.classList.add('open');
@@ -632,10 +661,10 @@
                     btn.onclick = (e) => { 
                         e.stopPropagation(); 
                         switchApp(app.id, app.name); 
-                        groupDiv.classList.remove('open');
+                        closeSidebar(); // Auto collapse on select
                     };
                     btn.setAttribute('data-id', app.id);
-                    btn.innerHTML = `<span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span><span class="sidebar-text ml-3 text-xs text-slate-300 font-medium opacity-0 transition-opacity duration-300">${app.name}</span>`;
+                    btn.innerHTML = `<span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span><span class="sidebar-text ml-3 text-xs text-slate-300 font-medium">${app.name}</span>`;
                     sub.appendChild(btn);
                 });
                 groupDiv.appendChild(title);
@@ -665,7 +694,6 @@
             const lowerArea = document.getElementById('lower-display-area');
             const resizer = document.getElementById('resizer');
             const monitor = document.getElementById('dashboard-monitor-frame');
-            const sidebar = document.getElementById('main-sidebar');
 
             document.getElementById('display-title').innerText = name;
             
@@ -688,8 +716,6 @@
             const activeNav = document.querySelector(`[data-id="${id}"]`);
             if(activeNav) activeNav.classList.add('active-menu');
             if (loadedApps[id]) loadedApps[id].classList.add('active');
-            
-            sidebar.classList.remove('expanded');
         }
 
         function initSplitResizer() {
@@ -740,6 +766,12 @@
         }
 
         function handleLogoutClick() {
+            const sidebar = document.getElementById('main-sidebar');
+            if (!sidebar.classList.contains('expanded')) {
+                sidebar.classList.add('expanded');
+                return;
+            }
+
             const iconBox = document.getElementById('logout-icon-box');
             if (!logoutConfirmState) {
                 logoutConfirmState = true;
@@ -756,41 +788,27 @@
             const welcome = document.getElementById('welcome-screen');
             const loginBtn = document.getElementById('login-btn');
             
-            // 1. Show Logout Overlay and reset progress
             overlay.classList.add('active');
-            
-            // RESET Progress state to 0% and no transition
             progress.style.transition = 'none';
             progress.style.width = '0%';
-            
-            // Force a reflow to make sure browser applies the 0% before starting transition
             void progress.offsetWidth;
-            
-            // 2. Start Progress animation
             progress.style.transition = 'width 1500ms linear';
             progress.style.width = '100%';
 
             setTimeout(() => {
-                // 3. Prepare Welcome screen behind overlay
                 welcome.classList.remove('hidden');
                 welcome.style.transform = 'translateY(0)';
                 loginBtn.innerHTML = '<span class="relative z-10 font-medium text-lg text-white">คลิกเพื่อเข้าใช้งานระบบ</span>';
                 
-                // 4. Hide System UI
                 document.getElementById('main-sidebar').classList.add('hidden');
+                closeSidebar();
                 document.getElementById('main-content').classList.add('hidden');
                 
-                // 5. Fade out overlay
                 overlay.classList.remove('active');
-                
-                // 6. Cleanup session states
                 resetLogoutButton();
                 logoutConfirmState = false;
-                
-                // Clear monitor frame to save resources
                 document.getElementById('dashboard-monitor-frame').src = 'about:blank';
-                
-            }, 1600); // Wait for progress to finish + small buffer
+            }, 1600);
         }
 
         function resetLogoutButton() {
