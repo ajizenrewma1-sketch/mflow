@@ -60,11 +60,8 @@
             box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
         }
 
-        .sidebar.expanded .sidebar-text {
-            opacity: 1 !important;
-        }
+        .sidebar.expanded .sidebar-text { opacity: 1 !important; }
 
-        /* Menu Group Styling */
         .menu-group {
             margin: 4px 8px;
             border-radius: 12px;
@@ -83,7 +80,6 @@
             white-space: nowrap;
         }
 
-        /* Show sub-menu on group hover */
         .sub-menu-container {
             max-height: 0;
             opacity: 0;
@@ -109,15 +105,9 @@
             padding-bottom: 5px;
         }
 
-        .chevron {
-            transition: transform 0.3s ease;
-        }
+        .chevron { transition: transform 0.3s ease; }
+        .menu-group.open .chevron { transform: rotate(180deg); }
 
-        .menu-group.open .chevron {
-            transform: rotate(180deg);
-        }
-
-        /* Nav Items inside group */
         .nav-item {
             position: relative;
             margin: 4px 12px 4px 0;
@@ -237,19 +227,6 @@
             resize: none;
             scrollbar-width: none;
         }
-        #quick-note-area::-webkit-scrollbar { display: none; }
-
-        /* --- UI Effects --- */
-        @keyframes pulse-yellow {
-            0% { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(253, 224, 71, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0); }
-        }
-
-        .alert-active {
-            animation: pulse-yellow 2s infinite;
-            border-color: var(--neon-yellow) !important;
-        }
 
         @keyframes scanline {
             0% { transform: translateY(-100%); }
@@ -316,7 +293,7 @@
     <div class="bg-grid"></div>
 
     <!-- Section: Welcome Screen -->
-    <div id="welcome-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-1000">
+    <div id="welcome-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-700">
         <div class="scanline"></div>
         <div class="mb-8 text-center">
             <h1 class="font-future text-6xl font-bold tracking-tighter text-reveal mb-2 uppercase">M-FLOW SYSTEM</h1>
@@ -331,10 +308,6 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 </button>
             </div>
-            
-            <button onclick="requestNotificationPermission()" class="text-[10px] text-slate-500 hover:text-cyan-400 transition-colors uppercase tracking-[0.2em] font-future">
-                เปิดการแจ้งเตือนแบบ Desktop (เฉพาะเมื่อเปิดหน้าเว็บนี้ค้างไว้)
-            </button>
         </div>
     </div>
 
@@ -347,7 +320,6 @@
                 <button onclick="clearNote()" class="text-[8px] text-slate-500 hover:text-red-400 transition-colors uppercase">Clear All</button>
             </div>
             <textarea id="quick-note-area" placeholder="พิมพ์เลขทะเบียน, เลขเคส หรือหมายเหตุที่นี่..."></textarea>
-            <p class="text-[8px] text-slate-600 mt-3 italic text-right uppercase tracking-tighter">Data persists until browser refresh</p>
         </div>
     </div>
 
@@ -360,7 +332,7 @@
                 <p class="text-slate-400 text-sm">กำลังลงชื่อออกกรุณารอสักครู่...</p>
             </div>
             <div class="w-64 bg-slate-800 h-1.5 rounded-full overflow-hidden mx-auto border border-white/5">
-                <div id="logout-progress" class="bg-cyan-500 h-full w-0 transition-all duration-[3000ms] ease-linear"></div>
+                <div id="logout-progress" class="bg-cyan-500 h-full w-0 transition-all duration-[2000ms] ease-linear"></div>
             </div>
         </div>
     </div>
@@ -375,7 +347,6 @@
 
     <!-- Sidebar -->
     <aside id="main-sidebar" class="sidebar flex flex-col hidden">
-        <!-- Sidebar Toggle (Hamburger) -->
         <div id="sidebar-toggle" class="h-16 flex items-center px-4 mt-2 cursor-pointer hover:bg-cyan-500/10 transition-all group border-b border-cyan-500/10">
             <div class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-cyan-500/30 text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-[0_0_10px_rgba(0,242,255,0.2)]">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -385,7 +356,6 @@
             </div>
         </div>
 
-        <!-- Logout Trigger Button -->
         <div id="logout-trigger" class="h-16 flex items-center px-4 border-b border-cyan-500/10 cursor-pointer hover:bg-red-500/10 transition-all group" onclick="handleLogoutClick()">
             <div id="logout-icon-box" class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-red-500/30 text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -401,37 +371,15 @@
         </nav>
 
         <div class="p-4 border-t border-cyan-500/10 text-center">
-            <div class="sidebar-text opacity-0 text-[9px] text-slate-500 uppercase tracking-widest mb-2 transition-opacity duration-300">สถานะการเชื่อมต่อ</div>
-            <div class="w-full bg-slate-800/50 h-1.5 rounded-full overflow-hidden border border-white/5">
-                <div class="bg-gradient-to-r from-cyan-600 to-cyan-400 h-full w-[85%] shadow-[0_0_10px_rgba(0,242,255,0.5)] animate-pulse"></div>
-            </div>
-            <div class="sidebar-text opacity-0 text-[7px] text-cyan-500/60 mt-2 font-future transition-opacity duration-300">SYSTEM STABLE</div>
+            <div class="sidebar-text opacity-0 text-[7px] text-cyan-500/60 mt-2 font-future transition-opacity duration-300 uppercase tracking-widest">SYSTEM STABLE</div>
         </div>
     </aside>
 
     <!-- Main UI -->
     <main id="main-content" class="flex-1 flex flex-col relative hidden p-4">
-        <!-- SLA Notification Bar -->
-        <div id="sla-alert" class="hidden absolute top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-2xl">
-            <div class="glass-panel border-yellow-400/50 bg-yellow-400/10 p-4 flex items-center justify-between shadow-[0_0_30px_rgba(253,224,71,0.2)] alert-active">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl animate-bounce">🔔</span>
-                    <div>
-                        <h4 class="font-future text-yellow-400 text-sm font-bold uppercase">แจ้งเตือนรอบทำยอด</h4>
-                        <p class="text-[10px] text-yellow-200/70 tracking-wide">ขณะนี้ถึงรอบเวลาตรวจสอบ SLA 3 ชั่วโมงแล้ว กรุณาอัปเดตข้อมูล</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="switchApp('sla', 'SLA 3 ชั่วโมง'); hideSlaAlert()" class="px-4 py-1.5 bg-yellow-400 text-slate-950 text-[10px] font-bold rounded-full hover:bg-white transition-all uppercase tracking-tighter">เข้าหน้า SLA</button>
-                    <button onclick="hideSlaAlert()" class="px-4 py-1.5 border border-yellow-400/30 text-yellow-400 text-[10px] rounded-full hover:bg-yellow-400/10 transition-all uppercase">ปิด</button>
-                </div>
-            </div>
-        </div>
-
-        <header id="top-bar" class="flex justify-between items-center mb-4 px-2 hidden relative h-12">
-            <!-- Left Info -->
+        <header id="top-bar" class="flex justify-between items-center mb-4 px-2 relative h-12">
             <div class="flex items-center gap-4 z-10">
-                <button onclick="closeCurrentApp()" class="p-2 glass-panel hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all">
+                <button onclick="gotoHome()" class="p-2 glass-panel hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 </button>
                 <div>
@@ -440,7 +388,6 @@
                 </div>
             </div>
 
-            <!-- Center Clock & Date -->
             <div class="center-absolute z-0 flex justify-center">
                 <div class="glass-panel px-6 py-2 flex items-center gap-4 border-cyan-500/20 shadow-[0_0_15px_rgba(0,242,255,0.05)]">
                     <div id="digital-clock" class="font-future text-xl font-bold text-cyan-400 tracking-widest min-w-[110px] text-center">00:00:00</div>
@@ -449,7 +396,6 @@
                 </div>
             </div>
 
-            <!-- Right Status -->
             <div class="flex items-center gap-4 glass-panel px-4 py-1.5 z-10">
                 <div class="flex flex-col items-end">
                     <span class="text-[8px] text-slate-500 uppercase tracking-tighter leading-none">เซิร์ฟเวอร์</span>
@@ -459,24 +405,23 @@
             </div>
         </header>
 
-        <div id="desktop-grid" class="flex-1 flex flex-col items-center justify-center">
-            <div class="text-center relative">
-                <div class="absolute -inset-40 bg-cyan-500/5 blur-[120px] rounded-full"></div>
-                <div class="mb-6 relative inline-block text-cyan-500/40">
-                    <svg class="w-32 h-32 animate-pulse opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5" d="M12 21a9 9 0 100-18 9 9 0 000 18z"></path></svg>
-                    <svg class="w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A2 2 0 013 15.482V5.518a2 2 0 011.553-1.943L9 2l5.447 2.724A2 2 0 0116 6.669V15l-6 5V20z"></path></svg>
-                </div>
-                <h3 class="font-future text-2xl text-cyan-400/30 tracking-[0.4em] uppercase">ระบบพร้อมใช้งาน</h3>
-                <p class="text-[11px] mt-4 text-slate-500 tracking-widest animate-pulse">คลิกที่แถบด้านซ้ายเพื่อกางเมนูเลือกเครื่องมือ</p>
-            </div>
-        </div>
-
-        <div id="stack-container" class="flex-1 relative hidden rounded-3xl overflow-hidden border border-white/5 shadow-2xl"></div>
+        <div id="stack-container" class="flex-1 relative rounded-3xl overflow-hidden border border-white/5 shadow-2xl"></div>
     </main>
 
     <script>
-        // Data Structure Grouping
+        const HOME_APP_ID = 'monitor-intelligence';
+        const HOME_APP_URL = 'https://m-flow-intelligence.vercel.app/';
+        const HOME_APP_NAME = 'Intelligence Monitoring';
+
         const MENU_GROUPS = [
+            {
+                id: 'grp-monitor',
+                name: 'ระบบตรวจสอบ',
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>',
+                items: [
+                    { id: HOME_APP_ID, name: HOME_APP_NAME, url: HOME_APP_URL, icon: '📊' }
+                ]
+            },
             {
                 id: 'grp-data',
                 name: 'กลุ่มชนข้อมูล',
@@ -516,126 +461,51 @@
         let isPreloaded = false;
         let logoutConfirmState = false;
         let logoutTimeout = null;
-        let lastAlertHour = -1; 
-        const SLA_HOURS = [6, 9, 12, 15, 18, 21, 23];
-
-        // --- Quick Note Functions ---
-        function toggleQuickNote() {
-            document.getElementById('quick-note-panel').classList.toggle('open');
-        }
-
-        function clearNote() {
-            if(confirm('ล้างบันทึกทั้งหมดหรือไม่?')) {
-                document.getElementById('quick-note-area').value = '';
-            }
-        }
-
-        // --- Core System Functions ---
-        function requestNotificationPermission() {
-            if (!("Notification" in window)) return;
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    new Notification("ระบบ M-FLOW", { 
-                        body: "เปิดใช้งานการแจ้งเตือนสำเร็จ (จะแจ้งเตือนเมื่อเปิดหน้านี้ค้างไว้เท่านั้น)", 
-                        icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
-                        silent: true
-                    });
-                }
-            });
-        }
 
         function updateClock() {
             const now = new Date();
             const h = now.getHours();
             const m = now.getMinutes();
             const s = now.getSeconds();
-            
-            const clockEl = document.getElementById('digital-clock');
-            if(clockEl) clockEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            
+            document.getElementById('digital-clock').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            const dateEl = document.getElementById('current-date');
-            if(dateEl) dateEl.innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
-            
-            if (SLA_HOURS.includes(h) && m === 0 && s === 0 && lastAlertHour !== h) {
-                showSlaAlert();
-                if (Notification.permission === "granted") {
-                    new Notification("แจ้งเตือน SLA 3 ชั่วโมง", { 
-                        body: "ถึงรอบเวลาตรวจสอบข้อมูลแล้ว กรุณาเข้าหน้า SLA",
-                        icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
-                        tag: 'sla-notification',
-                        silent: true
-                    });
-                }
-                lastAlertHour = h;
-            }
+            document.getElementById('current-date').innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
         }
         
-        function getDayName(dayIndex) {
-            const days = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
-            return days[dayIndex];
-        }
+        function getDayName(dayIndex) { return ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][dayIndex]; }
 
-        function showSlaAlert() { document.getElementById('sla-alert').classList.remove('hidden'); }
-        function hideSlaAlert() { document.getElementById('sla-alert').classList.add('hidden'); }
-
-        // Initializer
         window.onload = () => {
             setInterval(updateClock, 1000);
             updateClock();
             
             const navContainer = document.getElementById('nav-container');
-            if(!navContainer) return;
-            
-            // Build Menu UI from Groups
             MENU_GROUPS.forEach(group => {
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'menu-group';
-                
-                // Group Header
                 const groupTitle = document.createElement('div');
                 groupTitle.className = 'menu-group-title';
                 groupTitle.innerHTML = `
-                    <span class="min-w-[40px] h-10 flex items-center justify-center glass-panel text-cyan-400">
-                        ${group.icon}
-                    </span>
-                    <span class="sidebar-text ml-4 text-[13px] font-bold tracking-wide text-cyan-100 opacity-0 transition-opacity duration-300">
-                        ${group.name}
-                    </span>
+                    <span class="min-w-[40px] h-10 flex items-center justify-center glass-panel text-cyan-400">${group.icon}</span>
+                    <span class="sidebar-text ml-4 text-[13px] font-bold tracking-wide text-cyan-100 opacity-0 transition-opacity duration-300">${group.name}</span>
                     <span class="sidebar-text ml-auto opacity-0 text-cyan-500/50 chevron">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </span>
                 `;
-
                 groupTitle.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent sidebar closing from click bubble
-                    // ปิดกลุ่มอื่นเพื่อให้เปิดทีละกลุ่ม (Accordion)
-                    document.querySelectorAll('.menu-group').forEach(g => {
-                        if(g !== groupDiv) g.classList.remove('open');
-                    });
-                    // สลับสถานะกาง/พับกลุ่มที่คลิก
+                    e.stopPropagation();
+                    document.querySelectorAll('.menu-group').forEach(g => { if(g !== groupDiv) g.classList.remove('open'); });
                     groupDiv.classList.toggle('open');
                 });
-                
-                // Sub-menu Container
                 const subMenu = document.createElement('div');
                 subMenu.className = 'sub-menu-container';
-                
                 group.items.forEach(app => {
                     const btn = document.createElement('button');
                     btn.className = 'nav-item';
-                    btn.onclick = (e) => {
-                        e.stopPropagation();
-                        switchApp(app.id, app.name);
-                    };
+                    btn.onclick = (e) => { e.stopPropagation(); switchApp(app.id, app.name); };
                     btn.setAttribute('data-id', app.id);
-                    btn.innerHTML = `
-                        <span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span>
-                        <span class="sidebar-text ml-3 text-xs text-slate-300 font-medium tracking-wide opacity-0 transition-opacity duration-300">${app.name}</span>
-                    `;
+                    btn.innerHTML = `<span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span><span class="sidebar-text ml-3 text-xs text-slate-300 font-medium tracking-wide opacity-0 transition-opacity duration-300">${app.name}</span>`;
                     subMenu.appendChild(btn);
                 });
-                
                 groupDiv.appendChild(groupTitle);
                 groupDiv.appendChild(subMenu);
                 navContainer.appendChild(groupDiv);
@@ -645,7 +515,7 @@
         async function enterSystem() {
             const welcome = document.getElementById('welcome-screen');
             const loginBtn = document.getElementById('login-btn');
-            loginBtn.innerHTML = '<span class="animate-pulse">กำลังตรวจสอบโมดูล...</span>';
+            loginBtn.innerHTML = '<span class="animate-pulse">ตรวจสอบโมดูล...</span>';
             
             if (!isPreloaded) await preloadAllApps();
             
@@ -654,37 +524,22 @@
                 welcome.classList.add('hidden');
                 document.getElementById('main-sidebar').classList.remove('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
-                document.getElementById('top-bar').classList.remove('hidden');
-                loginBtn.innerHTML = '<span class="relative z-10 font-medium text-lg">คลิกเพื่อเข้าใช้งานระบบ</span>';
-            }, 800);
+                gotoHome();
+            }, 700);
         }
 
+        function gotoHome() { switchApp(HOME_APP_ID, HOME_APP_NAME); }
+
         function switchApp(id, name) {
-            document.getElementById('desktop-grid').classList.add('hidden');
-            document.getElementById('stack-container').classList.remove('hidden');
             document.getElementById('display-title').innerText = name;
-            
             document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
-            
             const activeNav = document.querySelector(`[data-id="${id}"]`);
             if(activeNav) activeNav.classList.add('active-menu');
-            
             if (loadedApps[id]) loadedApps[id].classList.add('active');
-
-            // Auto-collapse sidebar after selection
             const sidebar = document.getElementById('main-sidebar');
             sidebar.classList.remove('expanded');
             document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('open'));
-        }
-
-        function closeCurrentApp() {
-            document.getElementById('stack-container').classList.add('hidden');
-            const titleEl = document.getElementById('display-title');
-            if(titleEl) titleEl.innerText = "หน้าหลัก";
-            document.getElementById('desktop-grid').classList.remove('hidden');
-            document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
         }
 
         async function preloadAllApps() {
@@ -693,7 +548,6 @@
             const container = document.getElementById('stack-container');
             overlay.classList.remove('hidden');
             let completed = 0;
-            
             const allApps = MENU_GROUPS.flatMap(g => g.items);
 
             for (const app of allApps) {
@@ -709,8 +563,7 @@
                     loadedApps[app.id] = wrap;
                     await new Promise(r => setTimeout(r, 60)); 
                     completed++;
-                    const countEl = document.getElementById('preload-count');
-                    if(countEl) countEl.innerText = Math.round((completed / allApps.length) * 100);
+                    document.getElementById('preload-count').innerText = Math.round((completed / allApps.length) * 100);
                 }
             }
             isPreloaded = true;
@@ -731,36 +584,29 @@
         function executeLogout() {
             const overlay = document.getElementById('logout-overlay');
             const progress = document.getElementById('logout-progress');
-            if(overlay) overlay.style.display = 'flex';
-            setTimeout(() => { if(progress) progress.style.width = '100%'; }, 50);
+            overlay.style.display = 'flex';
+            setTimeout(() => { progress.style.width = '100%'; }, 50);
 
             setTimeout(() => {
-                for (let id in loadedApps) {
-                    let iframe = loadedApps[id].querySelector('iframe');
-                    let currentUrl = iframe.src;
-                    iframe.src = 'about:blank';
-                    setTimeout(() => { iframe.src = currentUrl; }, 100);
-                }
-                
-                const noteArea = document.getElementById('quick-note-area');
-                if(noteArea) noteArea.value = '';
-
-                const welcome = document.getElementById('welcome-screen');
-                if(welcome) {
-                    welcome.classList.remove('hidden');
-                    welcome.style.transform = 'translateY(0)';
-                }
-                
+                // Soft Reset instead of location.reload()
+                // 1. Hide System UI
                 document.getElementById('main-sidebar').classList.add('hidden');
                 document.getElementById('main-content').classList.add('hidden');
-                document.getElementById('top-bar').classList.add('hidden');
                 
-                closeCurrentApp();
+                // 2. Reset welcome screen
+                const welcome = document.getElementById('welcome-screen');
+                welcome.classList.remove('hidden');
+                welcome.style.transform = 'translateY(0)';
+                document.getElementById('login-btn').innerHTML = '<span class="relative z-10 font-medium text-lg text-white">คลิกเพื่อเข้าใช้งานระบบ</span>';
                 
-                if(overlay) overlay.style.display = 'none';
-                if(progress) progress.style.width = '0';
+                // 3. Clear transient data
+                document.getElementById('quick-note-area').value = '';
+                
+                // 4. Hide logout overlay
+                overlay.style.display = 'none';
+                progress.style.width = '0';
                 resetLogoutButton();
-            }, 3000);
+            }, 2100);
         }
 
         function resetLogoutButton() {
@@ -770,10 +616,7 @@
             if(logoutTimeout) clearTimeout(logoutTimeout);
         }
 
-        // Sidebar Click-to-Expand Logic
         const sidebar = document.getElementById('main-sidebar');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-
         sidebar.addEventListener('click', function(e) {
             if (!this.classList.contains('expanded') && !e.target.closest('#logout-trigger')) {
                 this.classList.add('expanded');
@@ -781,22 +624,23 @@
             }
         }, true);
 
-        if(sidebarToggle) {
-            sidebarToggle.addEventListener('click', (e) => {
-                if (sidebar.classList.contains('expanded')) {
-                    e.stopPropagation();
-                    sidebar.classList.remove('expanded');
-                    document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('open'));
-                }
-            });
-        }
-
-        document.addEventListener('click', function(e) {
-            if (sidebar && sidebar.classList.contains('expanded') && !sidebar.contains(e.target)) {
+        document.getElementById('sidebar-toggle').addEventListener('click', (e) => {
+            if (sidebar.classList.contains('expanded')) {
+                e.stopPropagation();
                 sidebar.classList.remove('expanded');
                 document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('open'));
             }
         });
+
+        document.addEventListener('click', function(e) {
+            if (sidebar.classList.contains('expanded') && !sidebar.contains(e.target)) {
+                sidebar.classList.remove('expanded');
+                document.querySelectorAll('.menu-group').forEach(g => g.classList.remove('open'));
+            }
+        });
+
+        function toggleQuickNote() { document.getElementById('quick-note-panel').classList.toggle('open'); }
+        function clearNote() { if(confirm('ล้างบันทึกทั้งหมดหรือไม่?')) document.getElementById('quick-note-area').value = ''; }
     </script>
 </body>
 </html>
