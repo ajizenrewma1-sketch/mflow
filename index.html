@@ -271,6 +271,13 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(20px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #logout-overlay.active {
+            display: flex;
+            opacity: 1;
         }
 
         .logout-box {
@@ -304,10 +311,21 @@
             transition: flex 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* Home Layout states */
         .home-layout #upper-workspace { flex: 1.5; }
         .full-layout #upper-workspace { flex: 1; }
-        .full-layout #lower-display-area { display: none; }
-        .full-layout #resizer { display: none; }
+        
+        /* Persistent Scroll Fix */
+        #lower-display-area.hidden-layout { 
+            visibility: hidden;
+            position: absolute;
+            pointer-events: none;
+            height: 0;
+            flex: 0 !important;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
 
         #lower-display-area {
             flex: 1;
@@ -320,13 +338,11 @@
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            transition: flex 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            animation: slideUp 0.5s ease forwards;
+            transition: flex 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        #resizer.hidden-resizer {
+            display: none;
         }
 
         #resizer {
@@ -369,6 +385,11 @@
             border: none;
         }
 
+        /* Added specific transition for logout progress */
+        #logout-progress {
+            transition: width 1500ms linear;
+        }
+
     </style>
 </head>
 <body class="flex flex-row">
@@ -379,7 +400,7 @@
         <div class="scanline"></div>
         <div class="mb-8 text-center">
             <h1 class="font-future text-6xl font-bold tracking-tighter text-reveal mb-2 uppercase">M-FLOW SYSTEM</h1>
-            <p class="text-cyan-500/80 tracking-[0.3em] text-lg font-medium">ศูนย์รวมระบบช่วยเหลือการทำงาน</p>
+            <p class="text-cyan-500/80 tracking-[0.3em] text-lg font-medium text-nowrap">ศูนย์รวมระบบช่วยเหลือการทำงาน</p>
         </div>
         
         <div class="flex flex-col items-center gap-4">
@@ -414,7 +435,7 @@
                 <p class="text-slate-400 text-sm">กำลังลงชื่อออกกรุณารอสักครู่...</p>
             </div>
             <div class="w-64 bg-slate-800 h-1.5 rounded-full overflow-hidden mx-auto border border-white/5">
-                <div id="logout-progress" class="bg-cyan-500 h-full w-0 transition-all duration-[2000ms] ease-linear"></div>
+                <div id="logout-progress" class="bg-cyan-500 h-full w-0"></div>
             </div>
         </div>
     </div>
@@ -495,7 +516,7 @@
             <!-- Resize Handle -->
             <div id="resizer"></div>
 
-            <!-- ส่วนล่าง: Dashboard Monitor -->
+            <!-- ส่วนล่าง: Dashboard Monitor (Persistent Scroll) -->
             <div id="lower-display-area" class="glass-panel">
                 <div class="section-tag">
                     NEW MLPR DASHBOARD MONITORING
@@ -562,9 +583,11 @@
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('th-TH', { hour12: false });
+            const clockEl = document.getElementById('digital-clock');
+            if(clockEl) clockEl.innerText = now.toLocaleTimeString('th-TH', { hour12: false });
             const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            document.getElementById('current-date').innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
+            const dateEl = document.getElementById('current-date');
+            if(dateEl) dateEl.innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
         }
         function getDayName(i) { return ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][i]; }
 
@@ -573,7 +596,14 @@
             updateClock();
             initNavMenu();
             initSplitResizer();
+            initSidebarBehavior();
         };
+
+        function initSidebarBehavior() {
+            const sidebar = document.getElementById('main-sidebar');
+            sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+            sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+        }
 
         function initNavMenu() {
             const container = document.getElementById('nav-container');
@@ -587,13 +617,23 @@
                     <span class="sidebar-text ml-4 text-[13px] font-bold text-cyan-100 opacity-0 transition-opacity duration-300">${group.name}</span>
                     <span class="sidebar-text ml-auto opacity-0 chevron"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></span>
                 `;
-                title.onclick = () => groupDiv.classList.toggle('open');
+                
+                title.onclick = () => {
+                    const isOpen = groupDiv.classList.contains('open');
+                    document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
+                    if (!isOpen) groupDiv.classList.add('open');
+                };
+
                 const sub = document.createElement('div');
                 sub.className = 'sub-menu-container';
                 group.items.forEach(app => {
                     const btn = document.createElement('button');
                     btn.className = 'nav-item';
-                    btn.onclick = (e) => { e.stopPropagation(); switchApp(app.id, app.name); };
+                    btn.onclick = (e) => { 
+                        e.stopPropagation(); 
+                        switchApp(app.id, app.name); 
+                        groupDiv.classList.remove('open');
+                    };
                     btn.setAttribute('data-id', app.id);
                     btn.innerHTML = `<span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span><span class="sidebar-text ml-3 text-xs text-slate-300 font-medium opacity-0 transition-opacity duration-300">${app.name}</span>`;
                     sub.appendChild(btn);
@@ -622,25 +662,36 @@
 
         function switchApp(id, name) {
             const split = document.getElementById('main-split-container');
+            const lowerArea = document.getElementById('lower-display-area');
+            const resizer = document.getElementById('resizer');
             const monitor = document.getElementById('dashboard-monitor-frame');
+            const sidebar = document.getElementById('main-sidebar');
+
             document.getElementById('display-title').innerText = name;
+            
             document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
             
             if (id === HOME_APP_ID) {
-                split.className = 'home-layout';
+                split.classList.remove('full-layout');
+                split.classList.add('home-layout');
+                lowerArea.classList.remove('hidden-layout');
+                resizer.classList.remove('hidden-resizer');
                 if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
             } else {
-                split.className = 'full-layout';
+                split.classList.remove('home-layout');
+                split.classList.add('full-layout');
+                lowerArea.classList.add('hidden-layout');
+                resizer.classList.add('hidden-resizer');
             }
+            
             const activeNav = document.querySelector(`[data-id="${id}"]`);
             if(activeNav) activeNav.classList.add('active-menu');
             if (loadedApps[id]) loadedApps[id].classList.add('active');
-            const sidebar = document.getElementById('main-sidebar');
+            
             sidebar.classList.remove('expanded');
         }
 
-        // Resizable Layout logic
         function initSplitResizer() {
             const resizer = document.getElementById('resizer');
             const upper = document.getElementById('upper-workspace');
@@ -651,7 +702,7 @@
             document.addEventListener('mousemove', (e) => {
                 if (!isResizing) return;
                 const containerHeight = document.getElementById('main-split-container').offsetHeight;
-                const pointerY = e.clientY - 80; // Offset top bar
+                const pointerY = e.clientY - 80; 
                 const upperFlex = (pointerY / containerHeight) * 2;
                 const lowerFlex = 2 - upperFlex;
                 if (upperFlex > 0.3 && lowerFlex > 0.3) {
@@ -695,12 +746,51 @@
                 if(iconBox) iconBox.classList.add('bg-red-600', 'animate-pulse');
                 logoutTimeout = setTimeout(() => resetLogoutButton(), 3000);
             } else {
-                const overlay = document.getElementById('logout-overlay');
-                const progress = document.getElementById('logout-progress');
-                overlay.style.display = 'flex';
-                setTimeout(() => { progress.style.width = '100%'; }, 50);
-                setTimeout(() => location.reload(), 2100);
+                performSmoothLogout();
             }
+        }
+
+        function performSmoothLogout() {
+            const overlay = document.getElementById('logout-overlay');
+            const progress = document.getElementById('logout-progress');
+            const welcome = document.getElementById('welcome-screen');
+            const loginBtn = document.getElementById('login-btn');
+            
+            // 1. Show Logout Overlay and reset progress
+            overlay.classList.add('active');
+            
+            // RESET Progress state to 0% and no transition
+            progress.style.transition = 'none';
+            progress.style.width = '0%';
+            
+            // Force a reflow to make sure browser applies the 0% before starting transition
+            void progress.offsetWidth;
+            
+            // 2. Start Progress animation
+            progress.style.transition = 'width 1500ms linear';
+            progress.style.width = '100%';
+
+            setTimeout(() => {
+                // 3. Prepare Welcome screen behind overlay
+                welcome.classList.remove('hidden');
+                welcome.style.transform = 'translateY(0)';
+                loginBtn.innerHTML = '<span class="relative z-10 font-medium text-lg text-white">คลิกเพื่อเข้าใช้งานระบบ</span>';
+                
+                // 4. Hide System UI
+                document.getElementById('main-sidebar').classList.add('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+                
+                // 5. Fade out overlay
+                overlay.classList.remove('active');
+                
+                // 6. Cleanup session states
+                resetLogoutButton();
+                logoutConfirmState = false;
+                
+                // Clear monitor frame to save resources
+                document.getElementById('dashboard-monitor-frame').src = 'about:blank';
+                
+            }, 1600); // Wait for progress to finish + small buffer
         }
 
         function resetLogoutButton() {
@@ -709,10 +799,6 @@
             if(iconBox) iconBox.classList.remove('bg-red-600', 'animate-pulse');
             if(logoutTimeout) clearTimeout(logoutTimeout);
         }
-
-        const sidebar = document.getElementById('main-sidebar');
-        sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
-        sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
 
         function toggleQuickNote() { document.getElementById('quick-note-panel').classList.toggle('open'); }
         function clearNote() { if(confirm('ล้างบันทึกทั้งหมดหรือไม่?')) document.getElementById('quick-note-area').value = ''; }
