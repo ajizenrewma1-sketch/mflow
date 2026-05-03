@@ -556,8 +556,7 @@
                 name: 'กลุ่มชนข้อมูล',
                 icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>',
                 items: [
-                    { id: 'r05', name: 'ชนข้อมูลต่างๆ', url: 'https://r05-vs-tcvs.vercel.app/', icon: '📊' },
-                    { id: 'r05-8gb', name: 'ชนข้อมูลสำหรับแรม 8 GB', url: 'https://r05-tcvs-v2.vercel.app/', icon: '⚡' },
+                    { id: 'r05', name: 'ตรวจสอบรายงาน R05 - R13', url: 'https://mlpr05-mlpr13.vercel.app/', icon: '📊' },
                     { id: 'dispute-find', name: 'หาสาเหตุไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
                     { id: 'excel-include', name: 'รวมช่อง Excel', url: 'https://include-sentences.vercel.app/', icon: '📂' }
                 ]
@@ -614,14 +613,12 @@
             sidebar.classList.toggle('expanded');
         }
 
-        // Close Sidebar Helper
         function closeSidebar() {
             const sidebar = document.getElementById('main-sidebar');
             sidebar.classList.remove('expanded');
             document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
         }
 
-        // Handle Home Click: Goto home and collapse sidebar
         function handleHomeClick() {
             gotoHome();
             closeSidebar();
@@ -662,7 +659,7 @@
                     btn.onclick = (e) => { 
                         e.stopPropagation(); 
                         switchApp(app.id, app.name); 
-                        closeSidebar(); // Auto collapse on select
+                        closeSidebar();
                     };
                     btn.setAttribute('data-id', app.id);
                     btn.innerHTML = `<span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span><span class="sidebar-text ml-3 text-xs text-slate-300 font-medium">${app.name}</span>`;
@@ -747,6 +744,7 @@
             overlay.classList.remove('hidden');
             let completed = 0;
             const allApps = MENU_GROUPS.flatMap(g => g.items);
+            
             for (const app of allApps) {
                 if (!loadedApps[app.id]) {
                     const wrap = document.createElement('div');
