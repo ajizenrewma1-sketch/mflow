@@ -108,7 +108,7 @@
         }
 
         .menu-group.open .sub-menu-container {
-            max-height: 500px;
+            max-height: 800px;
             opacity: 1;
             padding-top: 5px;
             padding-bottom: 5px;
@@ -321,11 +321,9 @@
             transition: flex 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Home Layout states */
         .home-layout #upper-workspace { flex: 1.5; }
         .full-layout #upper-workspace { flex: 1; }
         
-        /* Persistent Scroll Fix */
         #lower-display-area.hidden-layout { 
             visibility: hidden;
             position: absolute;
@@ -398,6 +396,21 @@
         #logout-progress {
             transition: width 1500ms linear;
         }
+        
+        /* Styles for enhanced items */
+        .btn-open-new {
+            opacity: 0;
+            transition: opacity 0.3s;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 6px;
+            padding: 4px;
+            margin-left: auto;
+        }
+        
+        .nav-item:hover .btn-open-new {
+            opacity: 1;
+        }
 
     </style>
 </head>
@@ -449,14 +462,6 @@
         </div>
     </div>
 
-    <!-- Preload Status Overlay -->
-    <div id="preload-overlay" class="fixed bottom-4 right-4 z-[110] hidden">
-        <div class="glass-panel px-4 py-2 flex items-center gap-3 border-cyan-500/30">
-            <div class="animate-spin h-3 w-3 border-2 border-cyan-500 border-t-transparent rounded-full"></div>
-            <span class="text-[10px] text-cyan-400 font-future uppercase tracking-widest">SYNCING MODULES: <span id="preload-count">0</span>%</span>
-        </div>
-    </div>
-
     <!-- Sidebar -->
     <aside id="main-sidebar" class="sidebar flex flex-col hidden">
         <div id="sidebar-toggle" class="h-16 flex items-center px-4 mt-2 cursor-pointer hover:bg-cyan-500/10 transition-all group border-b border-cyan-500/10" onclick="toggleSidebar()">
@@ -487,7 +492,6 @@
     <main id="main-content" class="flex-1 flex flex-col relative hidden p-4">
         <header id="top-bar" class="flex justify-between items-center mb-4 px-2 relative h-12">
             <div class="flex items-center gap-4 z-10">
-                <!-- Home Button with auto-collapse -->
                 <button onclick="handleHomeClick()" class="p-2 glass-panel hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 </button>
@@ -515,22 +519,19 @@
         </header>
 
         <div id="main-split-container" class="home-layout">
-            <!-- ส่วนบน: Workspace -->
+            <!-- Workspace Area -->
             <div id="upper-workspace">
                 <div class="section-tag" id="workspace-tag">MAIN WORKSPACE</div>
                 <div id="stack-container" class="absolute inset-x-0 bottom-0 top-6 rounded-3xl overflow-hidden border border-white/5 shadow-2xl bg-slate-900/40">
-                    <!-- iFrames -->
+                    <!-- iFrames rendered here -->
                 </div>
             </div>
 
-            <!-- Resize Handle -->
             <div id="resizer"></div>
 
-            <!-- ส่วนล่าง: Dashboard Monitor (Persistent Scroll) -->
+            <!-- Lower Monitor Area -->
             <div id="lower-display-area" class="glass-panel">
-                <div class="section-tag">
-                    NEW MLPR DASHBOARD MONITORING
-                </div>
+                <div class="section-tag">NEW MLPR DASHBOARD MONITORING</div>
                 <div class="dashboard-container" id="dashboard-viewport">
                     <iframe id="dashboard-monitor-frame" src="about:blank" allow="clipboard-write"></iframe>
                 </div>
@@ -556,7 +557,7 @@
                 name: 'กลุ่มชนข้อมูล',
                 icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>',
                 items: [
-                    { id: 'r05', name: 'ตรวจสอบรายงาน R05 - R13', url: 'https://mlpr05-mlpr13.vercel.app/', icon: '📊' },
+                    { id: 'r05-r13', name: 'ตรวจสอบรายงาน R05 - R13', url: 'https://mlpr05-mlpr13.vercel.app/', icon: '📊' },
                     { id: 'dispute-find', name: 'หาสาเหตุไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
                     { id: 'excel-include', name: 'รวมช่อง Excel', url: 'https://include-sentences.vercel.app/', icon: '📂' }
                 ]
@@ -608,21 +609,14 @@
             initSplitResizer();
         };
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('main-sidebar');
-            sidebar.classList.toggle('expanded');
-        }
-
+        function toggleSidebar() { document.getElementById('main-sidebar').classList.toggle('expanded'); }
         function closeSidebar() {
             const sidebar = document.getElementById('main-sidebar');
             sidebar.classList.remove('expanded');
             document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
         }
 
-        function handleHomeClick() {
-            gotoHome();
-            closeSidebar();
-        }
+        function handleHomeClick() { gotoHome(); closeSidebar(); }
 
         function initNavMenu() {
             const container = document.getElementById('nav-container');
@@ -645,7 +639,6 @@
                         groupDiv.classList.add('open');
                         return;
                     }
-
                     const isOpen = groupDiv.classList.contains('open');
                     document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
                     if (!isOpen) groupDiv.classList.add('open');
@@ -655,14 +648,29 @@
                 sub.className = 'sub-menu-container';
                 group.items.forEach(app => {
                     const btn = document.createElement('button');
-                    btn.className = 'nav-item';
+                    btn.className = 'nav-item group/item';
+                    
+                    // Simple click: open inside
                     btn.onclick = (e) => { 
                         e.stopPropagation(); 
                         switchApp(app.id, app.name); 
                         closeSidebar();
                     };
+                    
+                    // Double click: open in new tab
+                    btn.ondblclick = (e) => {
+                        e.stopPropagation();
+                        window.open(app.url, '_blank');
+                    };
+
                     btn.setAttribute('data-id', app.id);
-                    btn.innerHTML = `<span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span><span class="sidebar-text ml-3 text-xs text-slate-300 font-medium">${app.name}</span>`;
+                    btn.innerHTML = `
+                        <span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span>
+                        <span class="sidebar-text ml-3 text-xs text-slate-300 font-medium">${app.name}</span>
+                        <div class="sidebar-text btn-open-new" onclick="event.stopPropagation(); window.open('${app.url}', '_blank');" title="เปิดแท็บใหม่">
+                            <svg class="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </div>
+                    `;
                     sub.appendChild(btn);
                 });
                 groupDiv.appendChild(title);
@@ -694,7 +702,6 @@
             const monitor = document.getElementById('dashboard-monitor-frame');
 
             document.getElementById('display-title').innerText = name;
-            
             document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
             
@@ -739,12 +746,8 @@
 
         async function preloadAllApps() {
             if (isPreloaded) return;
-            const overlay = document.getElementById('preload-overlay');
             const container = document.getElementById('stack-container');
-            overlay.classList.remove('hidden');
-            let completed = 0;
             const allApps = MENU_GROUPS.flatMap(g => g.items);
-            
             for (const app of allApps) {
                 if (!loadedApps[app.id]) {
                     const wrap = document.createElement('div');
@@ -756,21 +759,14 @@
                     ifr.src = app.url;
                     loadedApps[app.id] = wrap;
                     await new Promise(r => setTimeout(r, 60)); 
-                    completed++;
-                    document.getElementById('preload-count').innerText = Math.round((completed / allApps.length) * 100);
                 }
             }
             isPreloaded = true;
-            setTimeout(() => overlay.classList.add('hidden'), 500);
         }
 
         function handleLogoutClick() {
             const sidebar = document.getElementById('main-sidebar');
-            if (!sidebar.classList.contains('expanded')) {
-                sidebar.classList.add('expanded');
-                return;
-            }
-
+            if (!sidebar.classList.contains('expanded')) { sidebar.classList.add('expanded'); return; }
             const iconBox = document.getElementById('logout-icon-box');
             if (!logoutConfirmState) {
                 logoutConfirmState = true;
@@ -786,7 +782,6 @@
             const progress = document.getElementById('logout-progress');
             const welcome = document.getElementById('welcome-screen');
             const loginBtn = document.getElementById('login-btn');
-            
             overlay.classList.add('active');
             progress.style.transition = 'none';
             progress.style.width = '0%';
@@ -798,11 +793,9 @@
                 welcome.classList.remove('hidden');
                 welcome.style.transform = 'translateY(0)';
                 loginBtn.innerHTML = '<span class="relative z-10 font-medium text-lg text-white">คลิกเพื่อเข้าใช้งานระบบ</span>';
-                
                 document.getElementById('main-sidebar').classList.add('hidden');
                 closeSidebar();
                 document.getElementById('main-content').classList.add('hidden');
-                
                 overlay.classList.remove('active');
                 resetLogoutButton();
                 logoutConfirmState = false;
