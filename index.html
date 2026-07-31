@@ -562,49 +562,49 @@
         </div>
     </main>
 <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.x.x/firebase-app.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.x.x/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-        // ตั้งค่า Config ของโปรเจกต์คุณ
-        const firebaseConfig = {
-  apiKey: "AIzaSyC4Hj0zbipYdBiHQQYM6Lft_jMUGjfgDBg",
-  authDomain: "mflow-hub.firebaseapp.com",
-  databaseURL: "https://mflow-hub-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "mflow-hub",
-  storageBucket: "mflow-hub.firebasestorage.app",
-  messagingSenderId: "509848719078",
-  appId: "1:509848719078:web:5a08907b9b043efb82f527"
-};
+    // ตั้งค่า Config ของโปรเจกต์คุณ
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4Hj0zbipYdBiHQQYM6Lft_jMUGjfgDBg",
+      authDomain: "mflow-hub.firebaseapp.com",
+      databaseURL: "https://mflow-hub-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mflow-hub",
+      storageBucket: "mflow-hub.firebasestorage.app",
+      messagingSenderId: "509848719078",
+      appId: "1:509848719078:web:5a08907b9b043efb82f527"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-        // โยนเข้า Global Window เพื่อให้สคริปต์หลักด้านล่างมองเห็นและเรียกใช้ได้
-        window.FirebaseCloudSync = {
-            saveMenu: async function(menuConfig) {
-                try {
-                    await set(ref(db, 'mflow/menu_config'), menuConfig);
-                    return true;
-                } catch (error) {
-                    console.error("Firebase Save Error:", error);
-                    return false;
-                }
-            },
-            loadMenu: async function() {
-                try {
-                    const dbRef = ref(db);
-                    const snapshot = await get(child(dbRef, 'mflow/menu_config'));
-                    if (snapshot.exists()) {
-                        return snapshot.val();
-                    }
-                    return null;
-                } catch (error) {
-                    console.error("Firebase Load Error:", error);
-                    return null;
-                }
+    // โยนเข้า Global Window เพื่อให้สคริปต์หลักด้านล่างมองเห็นและเรียกใช้ได้
+    window.FirebaseCloudSync = {
+        saveMenu: async function(menuConfig) {
+            try {
+                await set(ref(db, 'mflow/menu_config'), menuConfig);
+                return true;
+            } catch (error) {
+                console.error("Firebase Save Error:", error);
+                return false;
             }
-        };
-    </script>
+        },
+        loadMenu: async function() {
+            try {
+                const dbRef = ref(db);
+                const snapshot = await get(child(dbRef, 'mflow/menu_config'));
+                if (snapshot.exists()) {
+                    return snapshot.val();
+                }
+                return null;
+            } catch (error) {
+                console.error("Firebase Load Error:", error);
+                return null;
+            }
+        }
+    };
+</script>
     <script>
         const HOME_APP_ID = 'monitor-intelligence';
         const HOME_APP_URL = 'https://m-flow-intelligence.vercel.app/';
