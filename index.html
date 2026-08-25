@@ -701,13 +701,13 @@
                         return cloudData;
                     }
                 }
-                const saved = localStorage.getItem('mflow_cloud_menu');[cite: 7]
-                if (saved) return JSON.parse(saved);[cite: 7]
+                const saved = localStorage.getItem('mflow_cloud_menu');
+                if (saved) return JSON.parse(saved);
                 
-                return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));[cite: 7]
+                return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));
             } catch (e) {
-                console.error("Cloud Load Failed:", e);[cite: 7]
-                return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));[cite: 7]
+                console.error("Cloud Load Failed:", e);
+                return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));
             }
         },
         async saveMenu(menuConfig) {
@@ -717,21 +717,21 @@
                     success = await window.FirebaseCloudSync.saveMenu(menuConfig);
                 }
                 
-                localStorage.setItem('mflow_cloud_menu', JSON.stringify(menuConfig));[cite: 7]
+                localStorage.setItem('mflow_cloud_menu', JSON.stringify(menuConfig));
 
                 const statusLabel = document.getElementById('cloud-status');
                 if (success) {
-                    statusLabel.innerText = 'บันทึกขึ้น Cloud แล้ว';[cite: 7]
+                    statusLabel.innerText = 'บันทึกขึ้น Cloud แล้ว';
                     statusLabel.classList.replace('text-red-400', 'text-cyan-300');
                 } else {
                     throw new Error("Firebase save returns false");
                 }
 
                 setTimeout(() => {
-                    statusLabel.innerText = 'ออนไลน์ (Cloud Sync)';[cite: 7]
+                    statusLabel.innerText = 'ออนไลน์ (Cloud Sync)';
                 }, 2000);
             } catch (e) {
-                console.error("Cloud Save Failed:", e);[cite: 7]
+                console.error("Cloud Save Failed:", e);
                 const statusLabel = document.getElementById('cloud-status');
                 statusLabel.innerText = 'บันทึกลง Local เท่านั้น';
                 statusLabel.classList.replace('text-cyan-300', 'text-red-400');
