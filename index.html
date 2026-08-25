@@ -21,12 +21,12 @@
         }
 
         body {
-    font-family: 'Kanit', sans-serif;
-    background-color: var(--bg-dark);
-    color: #f8fafc;
-    overflow: hidden;
-    height: 100dvh; /* เปลี่ยนจาก 100vh เป็น 100dvh */
-}
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            overflow: hidden;
+            height: 100dvh;
+        }
 
         .font-future { font-family: 'Orbitron', sans-serif; }
 
@@ -51,24 +51,21 @@
             position: relative;
             z-index: 50;
             overflow-x: hidden;
-            overflow-y: hidden; /* เปลี่ยนจาก auto เป็น hidden เพื่อป้องกันการเลื่อนซ้อนกัน */
-            height: 100dvh;     /* ปรับความสูงให้รองรับแถบเครื่องมือบน iPad/Chrome */
+            overflow-y: hidden;
+            height: 100dvh;
         }
         
         .sidebar::-webkit-scrollbar { display: none; }
 
-        /* เพิ่มส่วนนี้สำหรับจัดการการเลื่อนเมนูด้านในบน iPad/Chrome */
         #sidebar-nav {
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* ทำให้ใช้นิ้วปัดเลื่อนบน iOS ได้อย่างลื่นไหล */
-            touch-action: pan-y;               /* บังคับให้อนุญาตการเลื่อนขึ้น-ลง */
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
             scrollbar-width: none;
-            height: calc(100dvh - 140px);      /* เว้นพื้นที่สำหรับโลโก้และปุ่มด้านล่าง */
+            height: calc(100dvh - 140px);
         }
 
-        #sidebar-nav::-webkit-scrollbar { 
-            display: none; 
-        }
+        #sidebar-nav::-webkit-scrollbar { display: none; }
 
         .sidebar.expanded {
             width: 320px;
@@ -160,7 +157,6 @@
             box-shadow: -10px 0 20px rgba(0, 242, 255, 0.1);
         }
         
-        /* Edit Mode Styles */
         .edit-controls { display: none; }
         .edit-mode-active .edit-controls { display: flex; }
         .edit-mode-active .chevron { display: none; }
@@ -178,38 +174,49 @@
             border-radius: 24px;
         }
 
+        /* --- ปรับแต่งส่วนของ App Container & Iframe ให้รองรับ Touch Scrolling บน iPad --- */
         .app-container {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    transform: translateY(10px);
-    will-change: transform, opacity;
-    
-    /* เปิดใช้งานการเลื่อนในระดับ Container */
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-}
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            transform: translateY(10px);
+            will-change: transform, opacity;
+            
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+        }
 
-.app-container.active {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-}
+        .app-container.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
 
-iframe {
-    width: 100%;
-    height: 100%;
-    min-height: 100%; 
-    border: none;
-    border-radius: 20px;
-    background: #fff;
-    display: block; 
-    
-    /* อนุญาตให้สัมผัสและเลื่อนผ่าน Iframe ได้ลื่นไหล */
-    -webkit-overflow-scrolling: touch;
-}
+        /* ห่อหุ้ม Iframe ด้วย Wrapper ชั้นในเพื่อให้ iOS เลื่อนหน้าจอทะลุได้ลื่นไหล */
+        .iframe-ios-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+            position: relative;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 100%; 
+            border: none;
+            border-radius: 20px;
+            background: #fff;
+            display: block; 
+            
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+        }
 
         /* Quick Note Sidebar */
         #quick-note-panel {
@@ -307,7 +314,6 @@ iframe {
             box-shadow: 0 0 10px currentColor;
         }
 
-        /* Logout Screen Styles */
         #logout-overlay {
             position: fixed;
             inset: 0;
@@ -342,7 +348,6 @@ iframe {
             transform: translateX(-50%);
         }
 
-        /* Layout Split Styles */
         #main-split-container {
             display: flex;
             flex-direction: column;
@@ -411,18 +416,15 @@ iframe {
         }
 
         .dashboard-container {
-    position: relative;
-    flex: 1;
-    width: 100%;
-    
-    /* ++ เปลี่ยนจาก overflow: hidden; เป็นโค้ดด้านล่าง ++ */
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
-    
-    border-radius: 16px;
-    background: #fff;
-}
+            position: relative;
+            flex: 1;
+            width: 100%;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+            border-radius: 16px;
+            background: #fff;
+        }
 
         #dashboard-monitor-frame {
             position: absolute;
@@ -447,10 +449,6 @@ iframe {
         
         .nav-item:hover .btn-open-new { opacity: 1; }
     </style>
-<link rel="manifest" href="/manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="M-Flow">
 </head>
 <body class="flex flex-row">
     <div class="bg-grid"></div>
@@ -514,14 +512,12 @@ iframe {
         <nav id="sidebar-nav" class="flex-1 space-y-1 pb-4 pt-4 overflow-y-auto">
             <div id="nav-container"></div>
             
-            <!-- ปุ่มเพิ่มหมวดหมู่ (แสดงเฉพาะตอนเปิด Edit Mode) -->
             <div id="add-group-btn" class="edit-controls sidebar-text mx-4 mt-4 px-4 py-3 border border-dashed border-cyan-500/50 rounded-lg cursor-pointer hover:bg-cyan-500/10 flex items-center justify-center gap-2 text-cyan-400 transition-all" onclick="promptAddGroup()">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 <span class="text-xs font-bold">เพิ่มหมวดหมู่ใหม่</span>
             </div>
         </nav>
         
-        <!-- Toggle Edit Mode -->
         <div class="h-14 flex items-center px-4 border-t border-cyan-500/10 cursor-pointer hover:bg-yellow-500/10 transition-all group" onclick="toggleEditMode()">
             <div class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-yellow-500/30 text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -577,8 +573,8 @@ iframe {
             <div id="upper-workspace">
                 <div class="section-tag" id="workspace-tag">MAIN WORKSPACE</div>
                 <div id="stack-container" class="absolute inset-x-0 bottom-0 top-6 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40" style="overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y;">
-    <!-- iFrames rendered here -->
-</div>
+                    <!-- iFrames rendered here with iOS wrapper -->
+                </div>
             </div>
 
             <div id="resizer"></div>
@@ -592,11 +588,11 @@ iframe {
             </div>
         </div>
     </main>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // ตั้งค่า Config ของโปรเจกต์คุณ
     const firebaseConfig = {
       apiKey: "AIzaSyC4Hj0zbipYdBiHQQYM6Lft_jMUGjfgDBg",
       authDomain: "mflow-hub.firebaseapp.com",
@@ -610,7 +606,6 @@ iframe {
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // โยนเข้า Global Window เพื่อให้สคริปต์หลักด้านล่างมองเห็นและเรียกใช้ได้
     window.FirebaseCloudSync = {
         saveMenu: async function(menuConfig) {
             try {
@@ -636,13 +631,13 @@ iframe {
         }
     };
 </script>
+
     <script>
         const HOME_APP_ID = 'monitor-intelligence';
         const HOME_APP_URL = 'https://m-flow-intelligence.vercel.app/';
         const HOME_APP_NAME = 'Intelligence Monitoring';
         const DASHBOARD_URL = 'https://192.168.10.100/new-mlpr/dashboard';
 
-        // ค่า Default เริ่มต้นกรณีไม่มีข้อมูลใน Cloud
         const DEFAULT_MENU_GROUPS = [
             {
                 id: 'grp-monitor',
@@ -696,72 +691,54 @@ iframe {
         let logoutConfirmState = false;
         let logoutTimeout = null;
         
-        // สถานะเมนู และโหมดแก้ไข
         let currentMenuGroups = [];
         let isEditMode = false;
         let sortableInstances = [];
 
-        // --- ระบบ CLOUD SYNC MOCKUP ---
-        // เปลี่ยน Service ด้านในนี้ให้เรียก fetch API จากเซิร์ฟเวอร์จริงได้เลยครับ
-        // แทนที่ CloudSync เดิมด้วยโค้ดด้านล่างนี้
-const CloudSync = {
-    async loadMenu() {
-        try {
-            // รอจังหวะสั้นๆ ให้ Module โหลดเสร็จก่อน
-            await new Promise(r => setTimeout(r, 100));
-
-            // ดึงจาก Cloud เป็นหลัก
-            if (window.FirebaseCloudSync) {
-                const cloudData = await window.FirebaseCloudSync.loadMenu();
-                if (cloudData) {
-                    // แบคอัพข้อมูลล่าสุดลงเครื่องเผื่อใช้ตอน Offline
-                    localStorage.setItem('mflow_cloud_menu', JSON.stringify(cloudData));
-                    return cloudData;
+        const CloudSync = {
+            async loadMenu() {
+                try {
+                    await new Promise(r => setTimeout(r, 100));
+                    if (window.FirebaseCloudSync) {
+                        const cloudData = await window.FirebaseCloudSync.loadMenu();
+                        if (cloudData) {
+                            localStorage.setItem('mflow_cloud_menu', JSON.stringify(cloudData));
+                            return cloudData;
+                        }
+                    }
+                    const saved = localStorage.getItem('mflow_cloud_menu');
+                    if (saved) return JSON.parse(saved);
+                    return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));
+                } catch (e) {
+                    console.error("Cloud Load Failed:", e);
+                    return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));
+                }
+            },
+            async saveMenu(menuConfig) {
+                try {
+                    let success = false;
+                    if (window.FirebaseCloudSync) {
+                        success = await window.FirebaseCloudSync.saveMenu(menuConfig);
+                    }
+                    localStorage.setItem('mflow_cloud_menu', JSON.stringify(menuConfig));
+                    const statusLabel = document.getElementById('cloud-status');
+                    if (success) {
+                        statusLabel.innerText = 'บันทึกขึ้น Cloud แล้ว';
+                        statusLabel.classList.replace('text-red-400', 'text-cyan-300');
+                    } else {
+                        throw new Error("Firebase save returns false");
+                    }
+                    setTimeout(() => {
+                        statusLabel.innerText = 'ออนไลน์ (Cloud Sync)';
+                    }, 2000);
+                } catch (e) {
+                    console.error("Cloud Save Failed:", e);
+                    const statusLabel = document.getElementById('cloud-status');
+                    statusLabel.innerText = 'บันทึกลง Local เท่านั้น';
+                    statusLabel.classList.replace('text-cyan-300', 'text-red-400');
                 }
             }
-
-            // Fallback: ดึงจากเครื่องหาก Cloud ไม่มีข้อมูล หรือเชื่อมต่อไม่ได้
-            const saved = localStorage.getItem('mflow_cloud_menu'); //[cite: 2]
-            if (saved) return JSON.parse(saved); //[cite: 2]
-            
-            return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS)); //[cite: 2]
-        } catch (e) {
-            console.error("Cloud Load Failed:", e); //[cite: 2]
-            return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS)); //[cite: 2]
-        }
-    },
-    async saveMenu(menuConfig) {
-        try {
-            let success = false;
-            
-            // อัปเดตขึ้น Cloud
-            if (window.FirebaseCloudSync) {
-                success = await window.FirebaseCloudSync.saveMenu(menuConfig);
-            }
-            
-            // บันทึกซ้ำลง LocalStorage ทันที[cite: 2]
-            localStorage.setItem('mflow_cloud_menu', JSON.stringify(menuConfig)); //[cite: 2]
-
-            // แสดงสถานะที่มุมขวาบนของหน้าจอ
-            const statusLabel = document.getElementById('cloud-status');
-            if (success) {
-                statusLabel.innerText = 'บันทึกขึ้น Cloud แล้ว'; //[cite: 2]
-                statusLabel.classList.replace('text-red-400', 'text-cyan-300');
-            } else {
-                throw new Error("Firebase save returns false");
-            }
-
-            setTimeout(() => {
-                statusLabel.innerText = 'ออนไลน์ (Cloud Sync)'; //[cite: 2]
-            }, 2000);
-        } catch (e) {
-            console.error("Cloud Save Failed:", e); //[cite: 2]
-            const statusLabel = document.getElementById('cloud-status');
-            statusLabel.innerText = 'บันทึกลง Local เท่านั้น';
-            statusLabel.classList.replace('text-cyan-300', 'text-red-400');
-        }
-    }
-};
+        };
 
         function updateClock() {
             const now = new Date();
@@ -776,8 +753,6 @@ const CloudSync = {
         window.onload = async () => {
             setInterval(updateClock, 1000);
             updateClock();
-            
-            // 3. โหลดเมนูจาก Cloud ตอนเปิดหน้า
             currentMenuGroups = await CloudSync.loadMenu();
             renderNavMenu();
             initSplitResizer();
@@ -785,7 +760,7 @@ const CloudSync = {
 
         function toggleSidebar() { document.getElementById('main-sidebar').classList.toggle('expanded'); }
         function closeSidebar() {
-            if (isEditMode) return; // ล็อคไม่ให้ปิดถ้าอยู่ในโหมดแก้ไข
+            if (isEditMode) return;
             const sidebar = document.getElementById('main-sidebar');
             sidebar.classList.remove('expanded');
             document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
@@ -803,20 +778,17 @@ const CloudSync = {
             } else {
                 sidebar.classList.remove('edit-mode-active');
                 document.getElementById('edit-mode-text').innerText = "แก้ไขเมนู";
-                // 3. เซฟลง Cloud เมื่อกดเสร็จสิ้น
                 rebuildMenuConfigFromDOM();
             }
-            renderNavMenu(); // Re-render UI
+            renderNavMenu();
         }
 
         function handleHomeClick() { gotoHome(); closeSidebar(); }
 
-        // --- ฟังก์ชั่นสำหรับการเรนเดอร์เมนู ---
         function renderNavMenu() {
             const container = document.getElementById('nav-container');
             container.innerHTML = '';
             
-            // ล้าง Sortable instance เก่าทิ้ง
             sortableInstances.forEach(s => s.destroy());
             sortableInstances = [];
 
@@ -825,7 +797,6 @@ const CloudSync = {
                 groupDiv.className = 'menu-group';
                 if (isEditMode) groupDiv.classList.add('open');
                 
-                // ฝังข้อมูลเพื่อใช้ตอน Save กลับ
                 groupDiv.dataset.id = group.id;
                 groupDiv.dataset.name = group.name;
                 groupDiv.dataset.iconOriginal = group.icon;
@@ -844,7 +815,7 @@ const CloudSync = {
                 `;
                 
                 title.onclick = (e) => {
-                    if(isEditMode) return; // ห้ามย่อ/ขยาย ถ้าอยู่ในโหมดแก้ไข
+                    if(isEditMode) return;
                     const sidebar = document.getElementById('main-sidebar');
                     if (!sidebar.classList.contains('expanded')) {
                         sidebar.classList.add('expanded');
@@ -900,9 +871,7 @@ const CloudSync = {
                 container.appendChild(groupDiv);
             });
 
-            // 2. เรียกใช้ SortableJS ถ้าอยู่ในโหมดแก้ไข
             if (isEditMode) {
-                // Drag หมวดหมู่หลัก
                 sortableInstances.push(new Sortable(container, {
                     animation: 150,
                     handle: '.drag-handle-group',
@@ -910,10 +879,9 @@ const CloudSync = {
                     onEnd: rebuildMenuConfigFromDOM
                 }));
 
-                // Drag เมนูย่อย (ข้ามหมวดหมู่ได้)
                 document.querySelectorAll('.sub-menu-container').forEach(subContainer => {
                     sortableInstances.push(new Sortable(subContainer, {
-                        group: 'shared-items', // ให้สามารถลากข้ามกลุ่มได้
+                        group: 'shared-items',
                         animation: 150,
                         handle: '.drag-handle-item',
                         ghostClass: 'drag-ghost',
@@ -923,7 +891,6 @@ const CloudSync = {
             }
         }
 
-        // --- ระบบสร้าง อัพเดท ลบ เมนู ---
         function rebuildMenuConfigFromDOM() {
             const newConfig = [];
             document.querySelectorAll('.menu-group').forEach(groupEl => {
@@ -1010,47 +977,52 @@ const CloudSync = {
         function gotoHome() { switchApp(HOME_APP_ID, HOME_APP_NAME, HOME_APP_URL); }
 
         function switchApp(id, name, url) {
-    const split = document.getElementById('main-split-container');
-    const lowerArea = document.getElementById('lower-display-area');
-    const resizer = document.getElementById('resizer');
-    const monitor = document.getElementById('dashboard-monitor-frame');
+            const split = document.getElementById('main-split-container');
+            const lowerArea = document.getElementById('lower-display-area');
+            const resizer = document.getElementById('resizer');
+            const monitor = document.getElementById('dashboard-monitor-frame');
 
-    document.getElementById('display-title').innerText = name;
-    document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
-    
-    if (id === HOME_APP_ID) {
-        split.classList.remove('full-layout');
-        split.classList.add('home-layout');
-        lowerArea.classList.remove('hidden-layout');
-        resizer.classList.remove('hidden-resizer');
-        if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
-    } else {
-        split.classList.remove('home-layout');
-        split.classList.add('full-layout');
-        lowerArea.classList.add('hidden-layout');
-        resizer.classList.add('hidden-resizer');
-    }
-    
-    const activeNav = document.querySelector(`[data-id="${id}"]`);
-    if(activeNav) activeNav.classList.add('active-menu');
-    
-    // Dynamic Iframe Load (กรณีเพิ่มเมนูใหม่หลังจาก Preload)
-    if (loadedApps[id]) {
-        loadedApps[id].classList.add('active');
-    } else {
-        const container = document.getElementById('stack-container');
-        const wrap = document.createElement('div');
-        wrap.className = 'app-container active';
-        const ifr = document.createElement('iframe');
-        ifr.setAttribute('allow', 'clipboard-write');
-        ifr.setAttribute('scrolling', 'yes'); // <--- เพิ่มบรรทัดนี้ เพื่อรองรับกรณีโหลดไอเฟรมใหม่แบบไดนามิก
-        ifr.src = url;
-        wrap.appendChild(ifr);
-        container.appendChild(wrap);
-        loadedApps[id] = wrap;
-    }
-}
+            document.getElementById('display-title').innerText = name;
+            document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
+            
+            if (id === HOME_APP_ID) {
+                split.classList.remove('full-layout');
+                split.classList.add('home-layout');
+                lowerArea.classList.remove('hidden-layout');
+                resizer.classList.remove('hidden-resizer');
+                if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
+            } else {
+                split.classList.remove('home-layout');
+                split.classList.add('full-layout');
+                lowerArea.classList.add('hidden-layout');
+                resizer.classList.add('hidden-resizer');
+            }
+            
+            const activeNav = document.querySelector(`[data-id="${id}"]`);
+            if(activeNav) activeNav.classList.add('active-menu');
+            
+            if (loadedApps[id]) {
+                loadedApps[id].classList.add('active');
+            } else {
+                const container = document.getElementById('stack-container');
+                const wrap = document.createElement('div');
+                wrap.className = 'app-container active';
+                
+                // ห่อ Iframe ด้วย Wrapper สำหรับ iOS Touch Scrolling
+                const iosWrapper = document.createElement('div');
+                iosWrapper.className = 'iframe-ios-wrapper';
+
+                const ifr = document.createElement('iframe');
+                ifr.setAttribute('allow', 'clipboard-write');
+                ifr.src = url;
+                
+                iosWrapper.appendChild(ifr);
+                wrap.appendChild(iosWrapper);
+                container.appendChild(wrap);
+                loadedApps[id] = wrap;
+            }
+        }
 
         function initSplitResizer() {
             const resizer = document.getElementById('resizer');
@@ -1074,25 +1046,30 @@ const CloudSync = {
         }
 
         async function preloadAllApps() {
-    if (isPreloaded) return;
-    const container = document.getElementById('stack-container');
-    const allApps = currentMenuGroups.flatMap(g => g.items);
-    for (const app of allApps) {
-        if (!loadedApps[app.id]) {
-            const wrap = document.createElement('div');
-            wrap.className = 'app-container';
-            const ifr = document.createElement('iframe');
-            ifr.setAttribute('allow', 'clipboard-write');
-            ifr.setAttribute('scrolling', 'yes'); // <--- เพิ่มบรรทัดนี้เพื่อให้ Iframe ยอมให้เลื่อนจอได้
-            wrap.appendChild(ifr);
-            container.appendChild(wrap);
-            ifr.src = app.url;
-            loadedApps[app.id] = wrap;
-            await new Promise(r => setTimeout(r, 60)); 
+            if (isPreloaded) return;
+            const container = document.getElementById('stack-container');
+            const allApps = currentMenuGroups.flatMap(g => g.items);
+            for (const app of allApps) {
+                if (!loadedApps[app.id]) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'app-container';
+                    
+                    const iosWrapper = document.createElement('div');
+                    iosWrapper.className = 'iframe-ios-wrapper';
+
+                    const ifr = document.createElement('iframe');
+                    ifr.setAttribute('allow', 'clipboard-write');
+                    
+                    iosWrapper.appendChild(ifr);
+                    wrap.appendChild(iosWrapper);
+                    container.appendChild(wrap);
+                    ifr.src = app.url;
+                    loadedApps[app.id] = wrap;
+                    await new Promise(r => setTimeout(r, 60)); 
+                }
+            }
+            isPreloaded = true;
         }
-    }
-    isPreloaded = true;
-}
 
         function handleLogoutClick() {
             const sidebar = document.getElementById('main-sidebar');
