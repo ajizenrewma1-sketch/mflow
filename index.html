@@ -187,10 +187,9 @@
     transform: translateY(10px);
     will-change: transform, opacity;
     
-    /* แก้ไขและเพิ่มคุณสมบัติการเลื่อนตรงนี้ */
+    /* เปิดใช้งานการเลื่อนในระดับ Container */
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
 }
 
 .app-container.active {
@@ -208,9 +207,8 @@ iframe {
     background: #fff;
     display: block; 
     
-    /* ป้องกันไอเฟรมบล็อกการเลื่อน */
+    /* อนุญาตให้สัมผัสและเลื่อนผ่าน Iframe ได้ลื่นไหล */
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
 }
 
         /* Quick Note Sidebar */
@@ -1012,46 +1010,47 @@ const CloudSync = {
         function gotoHome() { switchApp(HOME_APP_ID, HOME_APP_NAME, HOME_APP_URL); }
 
         function switchApp(id, name, url) {
-            const split = document.getElementById('main-split-container');
-            const lowerArea = document.getElementById('lower-display-area');
-            const resizer = document.getElementById('resizer');
-            const monitor = document.getElementById('dashboard-monitor-frame');
+    const split = document.getElementById('main-split-container');
+    const lowerArea = document.getElementById('lower-display-area');
+    const resizer = document.getElementById('resizer');
+    const monitor = document.getElementById('dashboard-monitor-frame');
 
-            document.getElementById('display-title').innerText = name;
-            document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
-            
-            if (id === HOME_APP_ID) {
-                split.classList.remove('full-layout');
-                split.classList.add('home-layout');
-                lowerArea.classList.remove('hidden-layout');
-                resizer.classList.remove('hidden-resizer');
-                if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
-            } else {
-                split.classList.remove('home-layout');
-                split.classList.add('full-layout');
-                lowerArea.classList.add('hidden-layout');
-                resizer.classList.add('hidden-resizer');
-            }
-            
-            const activeNav = document.querySelector(`[data-id="${id}"]`);
-            if(activeNav) activeNav.classList.add('active-menu');
-            
-            // Dynamic Iframe Load (กรณีเพิ่มเมนูใหม่หลังจาก Preload)
-            if (loadedApps[id]) {
-                loadedApps[id].classList.add('active');
-            } else {
-                const container = document.getElementById('stack-container');
-                const wrap = document.createElement('div');
-                wrap.className = 'app-container active';
-                const ifr = document.createElement('iframe');
-                ifr.setAttribute('allow', 'clipboard-write');
-                ifr.src = url;
-                wrap.appendChild(ifr);
-                container.appendChild(wrap);
-                loadedApps[id] = wrap;
-            }
-        }
+    document.getElementById('display-title').innerText = name;
+    document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
+    
+    if (id === HOME_APP_ID) {
+        split.classList.remove('full-layout');
+        split.classList.add('home-layout');
+        lowerArea.classList.remove('hidden-layout');
+        resizer.classList.remove('hidden-resizer');
+        if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
+    } else {
+        split.classList.remove('home-layout');
+        split.classList.add('full-layout');
+        lowerArea.classList.add('hidden-layout');
+        resizer.classList.add('hidden-resizer');
+    }
+    
+    const activeNav = document.querySelector(`[data-id="${id}"]`);
+    if(activeNav) activeNav.classList.add('active-menu');
+    
+    // Dynamic Iframe Load (กรณีเพิ่มเมนูใหม่หลังจาก Preload)
+    if (loadedApps[id]) {
+        loadedApps[id].classList.add('active');
+    } else {
+        const container = document.getElementById('stack-container');
+        const wrap = document.createElement('div');
+        wrap.className = 'app-container active';
+        const ifr = document.createElement('iframe');
+        ifr.setAttribute('allow', 'clipboard-write');
+        ifr.setAttribute('scrolling', 'yes'); // <--- เพิ่มบรรทัดนี้ เพื่อรองรับกรณีโหลดไอเฟรมใหม่แบบไดนามิก
+        ifr.src = url;
+        wrap.appendChild(ifr);
+        container.appendChild(wrap);
+        loadedApps[id] = wrap;
+    }
+}
 
         function initSplitResizer() {
             const resizer = document.getElementById('resizer');
@@ -1075,24 +1074,25 @@ const CloudSync = {
         }
 
         async function preloadAllApps() {
-            if (isPreloaded) return;
-            const container = document.getElementById('stack-container');
-            const allApps = currentMenuGroups.flatMap(g => g.items);
-            for (const app of allApps) {
-                if (!loadedApps[app.id]) {
-                    const wrap = document.createElement('div');
-                    wrap.className = 'app-container';
-                    const ifr = document.createElement('iframe');
-                    ifr.setAttribute('allow', 'clipboard-write');
-                    wrap.appendChild(ifr);
-                    container.appendChild(wrap);
-                    ifr.src = app.url;
-                    loadedApps[app.id] = wrap;
-                    await new Promise(r => setTimeout(r, 60)); 
-                }
-            }
-            isPreloaded = true;
+    if (isPreloaded) return;
+    const container = document.getElementById('stack-container');
+    const allApps = currentMenuGroups.flatMap(g => g.items);
+    for (const app of allApps) {
+        if (!loadedApps[app.id]) {
+            const wrap = document.createElement('div');
+            wrap.className = 'app-container';
+            const ifr = document.createElement('iframe');
+            ifr.setAttribute('allow', 'clipboard-write');
+            ifr.setAttribute('scrolling', 'yes'); // <--- เพิ่มบรรทัดนี้เพื่อให้ Iframe ยอมให้เลื่อนจอได้
+            wrap.appendChild(ifr);
+            container.appendChild(wrap);
+            ifr.src = app.url;
+            loadedApps[app.id] = wrap;
+            await new Promise(r => setTimeout(r, 60)); 
         }
+    }
+    isPreloaded = true;
+}
 
         function handleLogoutClick() {
             const sidebar = document.getElementById('main-sidebar');
