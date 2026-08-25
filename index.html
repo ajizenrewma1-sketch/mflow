@@ -179,14 +179,19 @@
         }
 
         .app-container {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            transform: translateY(10px);
-            will-change: transform, opacity;
-        }
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    transform: translateY(10px);
+    will-change: transform, opacity;
+    
+    /* ++ เพิ่ม 3 บรรทัดด้านล่างนี้ เพื่อแก้ปัญหา iframe ไม่เลื่อนบน iPad/Mobile ++ */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
 
         .app-container.active {
             opacity: 1;
@@ -402,13 +407,18 @@
         }
 
         .dashboard-container {
-            position: relative;
-            flex: 1;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 16px;
-            background: #fff;
-        }
+    position: relative;
+    flex: 1;
+    width: 100%;
+    
+    /* ++ เปลี่ยนจาก overflow: hidden; เป็นโค้ดด้านล่าง ++ */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    
+    border-radius: 16px;
+    background: #fff;
+}
 
         #dashboard-monitor-frame {
             position: absolute;
