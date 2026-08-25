@@ -558,23 +558,29 @@
             </div>
 
             <div class="flex items-center gap-3 z-10">
-                <!-- 🎛️ ปุ่มปรับซูมหน้าจอ -->
-                <div class="flex items-center gap-1 glass-panel px-2 py-1 border-cyan-500/20">
-                    <button onclick="changeZoom(-5)" class="w-6 h-6 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 rounded transition-all text-xs font-bold" title="ย่อหน้าจอ">-</button>
-                    <span id="zoom-level-text" class="text-[10px] font-future text-cyan-300 w-10 text-center">100%</span>
-                    <button onclick="changeZoom(5)" class="w-6 h-6 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 rounded transition-all text-xs font-bold" title="ขยายหน้าจอ">+</button>
-                    <button onclick="resetZoom()" class="text-[8px] text-slate-400 hover:text-white px-1 ml-1 border-l border-slate-700 uppercase" title="ค่าเริ่มต้น">100%</button>
-                </div>
+    <!-- 🎛️ ปุ่มปรับซูมหน้าจอ -->
+    <div class="flex items-center gap-1 glass-panel px-2 py-1 border-cyan-500/20">
+        <button onclick="changeZoom(-5)" class="w-6 h-6 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 rounded transition-all text-xs font-bold" title="ย่อหน้าจอ">-</button>
+        <span id="zoom-level-text" class="text-[10px] font-future text-cyan-300 w-10 text-center">100%</span>
+        <button onclick="changeZoom(5)" class="w-6 h-6 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 rounded transition-all text-xs font-bold" title="ขยายหน้าจอ">+</button>
+        <button onclick="resetZoom()" class="text-[8px] text-slate-400 hover:text-white px-1 ml-1 border-l border-slate-700 uppercase" title="ค่าเริ่มต้น">100%</button>
+    </div>
 
-                <!-- ส่วนแสดงสถานะเดิมของคุณ -->
-                <div class="flex items-center gap-4 glass-panel px-4 py-1.5">
-                    <div class="flex flex-col items-end">
-                        <span class="text-[8px] text-slate-500 uppercase tracking-tighter leading-none">เซิร์ฟเวอร์</span>
-                        <span class="text-[10px] font-future text-cyan-300" id="cloud-status">ออนไลน์ (Cloud Sync)</span>
-                    </div>
-                    <div class="led text-green-500 bg-current"></div>
-                </div>
-            </div>
+    <!-- 🖥️ ปุ่มเปิด-ปิด Dashboard Monitor (เพิ่มตรงนี้) -->
+    <button id="toggle-monitor-btn" onclick="toggleDashboardMonitor()" class="glass-panel px-3 py-1.5 text-cyan-400 hover:bg-cyan-500/20 rounded-xl text-xs flex items-center gap-1.5 transition-all border-cyan-500/30" title="ซ่อน/แสดง Dashboard Monitor">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg>
+        <span class="text-[10px] font-future uppercase hidden sm:inline" id="monitor-toggle-text">ซ่อน Monitor</span>
+    </button>
+
+    <!-- สถานะ Cloud เดิมของคุณ -->
+    <div class="flex items-center gap-4 glass-panel px-4 py-1.5">
+        <div class="flex flex-col items-end">
+            <span class="text-[8px] text-slate-500 uppercase tracking-tighter leading-none">เซิร์ฟเวอร์</span>
+            <span class="text-[10px] font-future text-cyan-300" id="cloud-status">ออนไลน์ (Cloud Sync)</span>
+        </div>
+        <div class="led text-green-500 bg-current"></div>
+    </div>
+</div>
         </header>
 
         <div id="main-split-container" class="home-layout">
@@ -675,6 +681,40 @@ function changeZoom(delta) {
 
 function resetZoom() {
     applyZoom(100);
+}
+
+// --- ระบบเปิด-ปิด Dashboard Monitor ด้านล่าง ---
+let isDashboardVisible = localStorage.getItem('mflow_monitor_visible') !== 'false'; // ค่าเริ่มต้นเป็น true (แสดง)
+
+function toggleDashboardMonitor() {
+    isDashboardVisible = !isDashboardVisible;
+    applyDashboardVisibility();
+    
+    // บันทึกสถานะลงในเครื่อง
+    localStorage.setItem('mflow_monitor_visible', isDashboardVisible);
+}
+
+function applyDashboardVisibility() {
+    const split = document.getElementById('main-split-container');
+    const lowerArea = document.getElementById('lower-display-area');
+    const resizer = document.getElementById('resizer');
+    const toggleBtnText = document.getElementById('monitor-toggle-text');
+    const toggleBtn = document.getElementById('toggle-monitor-btn');
+
+    // ทำงานเฉพาะตอนอยู่หน้าแรก (Home Layout) เท่านั้น
+    if (split.classList.contains('home-layout')) {
+        if (isDashboardVisible) {
+            lowerArea.classList.remove('hidden-layout');
+            resizer.classList.remove('hidden-resizer');
+            if (toggleBtnText) toggleBtnText.innerText = 'ซ่อน Monitor';
+            if (toggleBtn) toggleBtn.classList.remove('border-yellow-500/50', 'text-yellow-400');
+        } else {
+            lowerArea.classList.add('hidden-layout');
+            resizer.classList.add('hidden-resizer');
+            if (toggleBtnText) toggleBtnText.innerText = 'แสดง Monitor';
+            if (toggleBtn) toggleBtn.classList.add('border-yellow-500/50', 'text-yellow-400');
+        }
+    }
 }
     const HOME_APP_ID = 'monitor-intelligence';
     const HOME_APP_URL = 'https://m-flow-intelligence.vercel.app/';
@@ -800,7 +840,6 @@ function resetZoom() {
         setInterval(updateClock, 1000);
         updateClock();
         
-        // ➕ เรียกใช้ค่าซูมที่บันทึกไว้ทันทีที่โหลดหน้าเว็บ
         applyZoom(currentZoom);
         
         currentMenuGroups = await CloudSync.loadMenu();
@@ -1031,6 +1070,7 @@ function resetZoom() {
         const lowerArea = document.getElementById('lower-display-area');
         const resizer = document.getElementById('resizer');
         const monitor = document.getElementById('dashboard-monitor-frame');
+        const monitorToggleBtn = document.getElementById('toggle-monitor-btn'); // ➕ เพิ่มตัวแปรปุ่มซ่อน/แสดง
 
         document.getElementById('display-title').innerText = name;
         document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
@@ -1039,14 +1079,22 @@ function resetZoom() {
         if (id === HOME_APP_ID) {
             split.classList.remove('full-layout');
             split.classList.add('home-layout');
-            lowerArea.classList.remove('hidden-layout');
-            resizer.classList.remove('hidden-resizer');
+            
+            // ➕ แสดงปุ่มกดซ่อน/แสดงเฉพาะตอนอยู่หน้าแรก
+            if (monitorToggleBtn) monitorToggleBtn.style.display = 'flex';
+
+            // ➕ เช็คสถานะว่าผู้ใช้ตั้งค่าให้ซ่อนหรือแสดง Monitor ไว้
+            applyDashboardVisibility();
+
             if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
         } else {
             split.classList.remove('home-layout');
             split.classList.add('full-layout');
             lowerArea.classList.add('hidden-layout');
             resizer.classList.add('hidden-resizer');
+            
+            // ➕ ซ่อนปุ่มเปิด-ปิด Monitor เมื่ออยู่หน้าอื่นที่ไม่ใช่หน้าแรก
+            if (monitorToggleBtn) monitorToggleBtn.style.display = 'none';
         }
         
         const activeNav = document.querySelector(`[data-id="${id}"]`);
