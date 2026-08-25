@@ -388,14 +388,16 @@
         #resizer.hidden-resizer { display: none; }
 
         #resizer {
-            height: 4px;
-            background: transparent;
-            cursor: ns-resize;
-            transition: background 0.2s;
-            margin: -2px 0;
-            z-index: 20;
-        }
-        #resizer:hover { background: var(--neon-cyan); }
+    height: 12px;
+    background: transparent;
+    cursor: ns-resize;
+    transition: background 0.2s;
+    margin: -6px 0;
+    z-index: 20;
+    touch-action: none; /* ป้องกัน iPad สโครลหน้าจอแทนการลากเส้น */
+    position: relative;
+}
+#resizer:hover { background: var(--neon-cyan); }
 
         .section-tag {
             font-family: 'Orbitron', sans-serif;
@@ -440,6 +442,12 @@
         }
         
         .nav-item:hover .btn-open-new { opacity: 1; }
+
+@media screen and (max-width: 1024px) {
+    body {
+        zoom: 80%; /* ปรับเปอร์เซ็นต์ย่อได้ตามต้องการ เช่น 85% หรือ 75% */
+    }
+}
     </style>
 </head>
 <body class="flex flex-row">
@@ -1018,25 +1026,47 @@
     }
 
     function initSplitResizer() {
-        const resizer = document.getElementById('resizer');
-        const upper = document.getElementById('upper-workspace');
-        const lower = document.getElementById('lower-display-area');
-        let isResizing = false;
+    const resizer = document.getElementById('resizer');
+    const upper = document.getElementById('upper-workspace');
+    const lower = document.getElementById('lower-display-area');
+    let isResizing = false;
 
-        resizer.addEventListener('mousedown', () => { isResizing = true; document.body.style.cursor = 'ns-resize'; });
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            const containerHeight = document.getElementById('main-split-container').offsetHeight;
-            const pointerY = e.clientY - 80; 
-            const upperFlex = (pointerY / containerHeight) * 2;
-            const lowerFlex = 2 - upperFlex;
-            if (upperFlex > 0.3 && lowerFlex > 0.3) {
-                upper.style.flex = upperFlex;
-                lower.style.flex = lowerFlex;
-            }
-        });
-        document.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = 'default'; });
-    }
+    const startResize = (e) => {
+        isResizing = true;
+        document.body.style.cursor = 'ns-resize';
+    };
+
+    const doResize = (e) => {
+        if (!isResizing) return;
+        
+        // อ่านตำแหน่ง Y รองรับทั้ง Mouse (PC) และ Touch (iPad)
+        const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+        const containerHeight = document.getElementById('main-split-container').offsetHeight;
+        const pointerY = clientY - 80; 
+        const upperFlex = (pointerY / containerHeight) * 2;
+        const lowerFlex = 2 - upperFlex;
+        
+        if (upperFlex > 0.3 && lowerFlex > 0.3) {
+            upper.style.flex = upperFlex;
+            lower.style.flex = lowerFlex;
+        }
+    };
+
+    const stopResize = () => {
+        isResizing = false;
+        document.body.style.cursor = 'default';
+    };
+
+    // รองรับ Mouse (PC)
+    resizer.addEventListener('mousedown', startResize);
+    document.addEventListener('mousemove', doResize);
+    document.addEventListener('mouseup', stopResize);
+
+    // รองรับ Touch (iPad / Tablet)
+    resizer.addEventListener('touchstart', startResize, { passive: true });
+    document.addEventListener('touchmove', doResize, { passive: true });
+    document.addEventListener('touchend', stopResize);
+}
 
     async function preloadAllApps() {
         if (isPreloaded) return;
