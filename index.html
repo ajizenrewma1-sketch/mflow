@@ -443,11 +443,7 @@
         
         .nav-item:hover .btn-open-new { opacity: 1; }
 
-@media screen and (max-width: 1024px) {
-    body {
-        zoom: 80%; /* ปรับเปอร์เซ็นต์ย่อได้ตามต้องการ เช่น 85% หรือ 75% */
-    }
-}
+
     </style>
 </head>
 <body class="flex flex-row">
@@ -561,12 +557,23 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-4 glass-panel px-4 py-1.5 z-10">
-                <div class="flex flex-col items-end">
-                    <span class="text-[8px] text-slate-500 uppercase tracking-tighter leading-none">เซิร์ฟเวอร์</span>
-                    <span class="text-[10px] font-future text-cyan-300" id="cloud-status">ออนไลน์ (Cloud Sync)</span>
+            <div class="flex items-center gap-3 z-10">
+                <!-- 🎛️ ปุ่มปรับซูมหน้าจอ -->
+                <div class="flex items-center gap-1 glass-panel px-2 py-1 border-cyan-500/20">
+                    <button onclick="changeZoom(-5)" class="w-6 h-6 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 rounded transition-all text-xs font-bold" title="ย่อหน้าจอ">-</button>
+                    <span id="zoom-level-text" class="text-[10px] font-future text-cyan-300 w-10 text-center">100%</span>
+                    <button onclick="changeZoom(5)" class="w-6 h-6 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/20 rounded transition-all text-xs font-bold" title="ขยายหน้าจอ">+</button>
+                    <button onclick="resetZoom()" class="text-[8px] text-slate-400 hover:text-white px-1 ml-1 border-l border-slate-700 uppercase" title="ค่าเริ่มต้น">100%</button>
                 </div>
-                <div class="led text-green-500 bg-current"></div>
+
+                <!-- ส่วนแสดงสถานะเดิมของคุณ -->
+                <div class="flex items-center gap-4 glass-panel px-4 py-1.5">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[8px] text-slate-500 uppercase tracking-tighter leading-none">เซิร์ฟเวอร์</span>
+                        <span class="text-[10px] font-future text-cyan-300" id="cloud-status">ออนไลน์ (Cloud Sync)</span>
+                    </div>
+                    <div class="led text-green-500 bg-current"></div>
+                </div>
             </div>
         </header>
 
@@ -637,6 +644,38 @@
 </script>
 
 <script>
+
+// --- ระบบปรับซูมหน้าจอ ---
+// --- ระบบปรับซูมเฉพาะส่วน Main Workspace และ Monitor ---
+let currentZoom = parseInt(localStorage.getItem('mflow_zoom_level')) || 100;
+
+function applyZoom(level) {
+    // จำกัดช่วงการซูมให้อยู่ระหว่าง 60% ถึง 150%
+    currentZoom = Math.max(60, Math.min(150, level));
+    
+    // 🎯 สั่งซูมที่ #main-split-container ซึ่งครอบคลุมทั้ง Main Workspace และ Monitor
+    const splitContainer = document.getElementById('main-split-container');
+    if (splitContainer) {
+        splitContainer.style.zoom = currentZoom + '%';
+    }
+    
+    // อัปเดตตัวเลขแสดงผลบนปุ่ม
+    const zoomTextEl = document.getElementById('zoom-level-text');
+    if (zoomTextEl) {
+        zoomTextEl.innerText = currentZoom + '%';
+    }
+    
+    // บันทึกค่าการซูมลงในเครื่อง
+    localStorage.setItem('mflow_zoom_level', currentZoom);
+}
+
+function changeZoom(delta) {
+    applyZoom(currentZoom + delta);
+}
+
+function resetZoom() {
+    applyZoom(100);
+}
     const HOME_APP_ID = 'monitor-intelligence';
     const HOME_APP_URL = 'https://m-flow-intelligence.vercel.app/';
     const HOME_APP_NAME = 'Intelligence Monitoring';
@@ -760,6 +799,9 @@
     window.onload = async () => {
         setInterval(updateClock, 1000);
         updateClock();
+        
+        // ➕ เรียกใช้ค่าซูมที่บันทึกไว้ทันทีที่โหลดหน้าเว็บ
+        applyZoom(currentZoom);
         
         currentMenuGroups = await CloudSync.loadMenu();
         renderNavMenu();
