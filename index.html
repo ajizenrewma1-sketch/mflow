@@ -25,7 +25,7 @@
             background-color: var(--bg-dark);
             color: #f8fafc;
             overflow: hidden;
-            height: 100dvh;
+            height: 100dvh; 
         }
 
         .font-future { font-family: 'Orbitron', sans-serif; }
@@ -51,21 +51,22 @@
             position: relative;
             z-index: 50;
             overflow-x: hidden;
-            overflow-y: hidden;
-            height: 100dvh;
+            overflow-y: hidden; 
+            height: 100dvh;     
         }
         
         .sidebar::-webkit-scrollbar { display: none; }
 
         #sidebar-nav {
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch; 
             scrollbar-width: none;
-            height: calc(100dvh - 140px);
+            height: calc(100dvh - 140px);      
         }
 
-        #sidebar-nav::-webkit-scrollbar { display: none; }
+        #sidebar-nav::-webkit-scrollbar { 
+            display: none; 
+        }
 
         .sidebar.expanded {
             width: 320px;
@@ -157,6 +158,7 @@
             box-shadow: -10px 0 20px rgba(0, 242, 255, 0.1);
         }
         
+        /* Edit Mode Styles */
         .edit-controls { display: none; }
         .edit-mode-active .edit-controls { display: flex; }
         .edit-mode-active .chevron { display: none; }
@@ -174,7 +176,7 @@
             border-radius: 24px;
         }
 
-        /* --- ปรับแต่งส่วนของ App Container & Iframe ให้รองรับ Touch Scrolling บน iPad --- */
+        /* แก้ไขคุณสมบัติการเลื่อนที่นี่ */
         .app-container {
             position: absolute;
             inset: 0;
@@ -184,38 +186,28 @@
             transform: translateY(10px);
             will-change: transform, opacity;
             
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            touch-action: pan-y !important;
+            /* ให้ .app-container ทำหน้าที่รับ Scroll เพื่อป้องกันปัญหา iFrame บนมือถือ/iOS */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 20px;
+            z-index: 1;
         }
 
         .app-container.active {
             opacity: 1;
             pointer-events: auto;
             transform: translateY(0);
-        }
-
-        /* ห่อหุ้ม Iframe ด้วย Wrapper ชั้นในเพื่อให้ iOS เลื่อนหน้าจอทะลุได้ลื่นไหล */
-        .iframe-ios-wrapper {
-            width: 100%;
-            height: 100%;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            touch-action: pan-y !important;
-            position: relative;
+            z-index: 10;
         }
 
         iframe {
             width: 100%;
             height: 100%;
-            min-height: 100%; 
             border: none;
             border-radius: 20px;
             background: #fff;
             display: block; 
-            
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-y;
+            /* ลบ touch-action ออกเพื่อให้เบราว์เซอร์จัดการ scroll แบบ native */
         }
 
         /* Quick Note Sidebar */
@@ -314,6 +306,7 @@
             box-shadow: 0 0 10px currentColor;
         }
 
+        /* Logout Screen Styles */
         #logout-overlay {
             position: fixed;
             inset: 0;
@@ -348,6 +341,7 @@
             transform: translateX(-50%);
         }
 
+        /* Layout Split Styles */
         #main-split-container {
             display: flex;
             flex-direction: column;
@@ -419,9 +413,7 @@
             position: relative;
             flex: 1;
             width: 100%;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            touch-action: pan-y !important;
+            overflow: hidden; /* ลบการบังคับ auto ออกเพื่อให้ iframe ควบคุมตัวเอง */
             border-radius: 16px;
             background: #fff;
         }
@@ -512,12 +504,14 @@
         <nav id="sidebar-nav" class="flex-1 space-y-1 pb-4 pt-4 overflow-y-auto">
             <div id="nav-container"></div>
             
+            <!-- ปุ่มเพิ่มหมวดหมู่ -->
             <div id="add-group-btn" class="edit-controls sidebar-text mx-4 mt-4 px-4 py-3 border border-dashed border-cyan-500/50 rounded-lg cursor-pointer hover:bg-cyan-500/10 flex items-center justify-center gap-2 text-cyan-400 transition-all" onclick="promptAddGroup()">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 <span class="text-xs font-bold">เพิ่มหมวดหมู่ใหม่</span>
             </div>
         </nav>
         
+        <!-- Toggle Edit Mode -->
         <div class="h-14 flex items-center px-4 border-t border-cyan-500/10 cursor-pointer hover:bg-yellow-500/10 transition-all group" onclick="toggleEditMode()">
             <div class="min-w-[40px] h-10 flex items-center justify-center bg-slate-800/80 rounded-lg border border-yellow-500/30 text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -572,8 +566,10 @@
             <!-- Workspace Area -->
             <div id="upper-workspace">
                 <div class="section-tag" id="workspace-tag">MAIN WORKSPACE</div>
-                <div id="stack-container" class="absolute inset-x-0 bottom-0 top-6 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40" style="overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                    <!-- iFrames rendered here with iOS wrapper -->
+                
+                <!-- แก้ไขการจัดการกล่องแสดงผลให้เป็น overflow-hidden -->
+                <div id="stack-container" class="absolute inset-x-0 bottom-0 top-6 rounded-3xl border border-white/5 shadow-2xl bg-slate-900/40 overflow-hidden">
+                    <!-- iFrames rendered here -->
                 </div>
             </div>
 
@@ -632,493 +628,484 @@
     };
 </script>
 
-    <script>
-        const HOME_APP_ID = 'monitor-intelligence';
-        const HOME_APP_URL = 'https://m-flow-intelligence.vercel.app/';
-        const HOME_APP_NAME = 'Intelligence Monitoring';
-        const DASHBOARD_URL = 'https://192.168.10.100/new-mlpr/dashboard';
+<script>
+    const HOME_APP_ID = 'monitor-intelligence';
+    const HOME_APP_URL = 'https://m-flow-intelligence.vercel.app/';
+    const HOME_APP_NAME = 'Intelligence Monitoring';
+    const DASHBOARD_URL = 'https://192.168.10.100/new-mlpr/dashboard';
 
-        const DEFAULT_MENU_GROUPS = [
-            {
-                id: 'grp-monitor',
-                name: 'ระบบตรวจสอบ',
-                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>',
-                items: [{ id: HOME_APP_ID, name: HOME_APP_NAME, url: HOME_APP_URL, icon: '📊' }]
-            },
-            {
-                id: 'grp-data',
-                name: 'กลุ่มชนข้อมูล',
-                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>',
-                items: [
-                    { id: 'r05-r13', name: 'ตรวจสอบรายงาน R05 - R13', url: 'https://mlpr05-mlpr13.vercel.app/', icon: '📊' },
-                    { id: 'dispute-find', name: 'หาสาเหตุไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
-                    { id: 'excel-include', name: 'รวมช่อง Excel', url: 'https://include-sentences.vercel.app/', icon: '📂' }
-                ]
-            },
-            {
-                id: 'grp-dispute',
-                name: 'กลุ่มการทำโต้แย้ง',
-                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
-                items: [
-                    { id: 'pinai', name: 'ทำพินัย', url: 'https://pinai.vercel.app/', icon: '📜' },
-                    { id: 'multi-dis', name: 'โต้แย้งหลายทะเบียน', url: 'https://multi-dispul.vercel.app/', icon: '🚗' },
-                    { id: 'single-dis', name: 'โต้แย้ง 1 ทะเบียน', url: 'https://dupit.netlify.app/', icon: '📍' },
-                    { id: 'log-l', name: 'แยก Log L', url: 'https://log-l.vercel.app/', icon: '📝' },
-                    { id: 'manual-dis', name: 'ทำโต้แย้ง Manual', url: 'https://log-l-t7.vercel.app/', icon: '✏️' },
-                    { id: 'ALPR V2.0', name: 'ชนช้อมูลไฟล์ ALPR V2.0', url: 'https://alpr-v2-sage.vercel.app/', icon: '🤖' },
-                    { id: 'reports All', name: 'ลิงค์โหลดไฟล์ All', url: 'http://172.20.20.45:8080/login', icon: '🤖' },
-                    { id: 'log-l-illegal', name: 'แยก Log L เพื่อยิงถังผิดกฏหมาย', url: 'https://possman-illegal.vercel.app/', icon: '🚨' }
-                ]
-            },
-            {
-                id: 'grp-daily',
-                name: 'การทำงานทั่วไปประจำวัน',
-                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
-                items: [
-                    { id: 'audit-hour', name: 'รายงานรายชั่วโมง Audit', url: 'https://graph-audit.vercel.app/', icon: '📈' },
-                    { id: 'sla', name: 'SLA 3 ชั่วโมง', url: 'https://monitor-temp-xi.vercel.app/', icon: '⏱️' },
-                    { id: 'web-work', name: 'ลิ้งค์งานต่างๆ', url: 'https://web-work-five.vercel.app/', icon: '🔗' },
-                    { id: 'tg-ยอด', name: 'ทำยอด TG', url: 'https://tg-five-xi.vercel.app/', icon: '🚀' },
-                    { id: 'temp-press', name: 'ทำยอดกดน้อง Temp', url: 'https://temp3hours.vercel.app/', icon: '💡' },
-                    { id: 'temp-wrong', name: 'ลงยอดผิด Temp', url: 'https://temp-wong.vercel.app/', icon: '⚠️' },
-                    { id: 'template-report', name: 'เทมเพลสรายงาน', url: 'https://template-five-beige.vercel.app/', icon: '📄' }
-                ]
-            }
-        ];
+    const DEFAULT_MENU_GROUPS = [
+        {
+            id: 'grp-monitor',
+            name: 'ระบบตรวจสอบ',
+            icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>',
+            items: [{ id: HOME_APP_ID, name: HOME_APP_NAME, url: HOME_APP_URL, icon: '📊' }]
+        },
+        {
+            id: 'grp-data',
+            name: 'กลุ่มชนข้อมูล',
+            icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>',
+            items: [
+                { id: 'r05-r13', name: 'ตรวจสอบรายงาน R05 - R13', url: 'https://mlpr05-mlpr13.vercel.app/', icon: '📊' },
+                { id: 'dispute-find', name: 'หาสาเหตุไม่เจอ TCVS', url: 'https://dispult.vercel.app/', icon: '🔍' },
+                { id: 'excel-include', name: 'รวมช่อง Excel', url: 'https://include-sentences.vercel.app/', icon: '📂' }
+            ]
+        },
+        {
+            id: 'grp-dispute',
+            name: 'กลุ่มการทำโต้แย้ง',
+            icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+            items: [
+                { id: 'pinai', name: 'ทำพินัย', url: 'https://pinai.vercel.app/', icon: '📜' },
+                { id: 'multi-dis', name: 'โต้แย้งหลายทะเบียน', url: 'https://multi-dispul.vercel.app/', icon: '🚗' },
+                { id: 'single-dis', name: 'โต้แย้ง 1 ทะเบียน', url: 'https://dupit.netlify.app/', icon: '📍' },
+                { id: 'log-l', name: 'แยก Log L', url: 'https://log-l.vercel.app/', icon: '📝' },
+                { id: 'manual-dis', name: 'ทำโต้แย้ง Manual', url: 'https://log-l-t7.vercel.app/', icon: '✏️' },
+                { id: 'ALPR V2.0', name: 'ชนช้อมูลไฟล์ ALPR V2.0', url: 'https://alpr-v2-sage.vercel.app/', icon: '🤖' },
+                { id: 'reports All', name: 'ลิงค์โหลดไฟล์ All', url: 'http://172.20.20.45:8080/login', icon: '🤖' },
+                { id: 'log-l-illegal', name: 'แยก Log L เพื่อยิงถังผิดกฏหมาย', url: 'https://possman-illegal.vercel.app/', icon: '🚨' }
+            ]
+        },
+        {
+            id: 'grp-daily',
+            name: 'การทำงานทั่วไปประจำวัน',
+            icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+            items: [
+                { id: 'audit-hour', name: 'รายงานรายชั่วโมง Audit', url: 'https://graph-audit.vercel.app/', icon: '📈' },
+                { id: 'sla', name: 'SLA 3 ชั่วโมง', url: 'https://monitor-temp-xi.vercel.app/', icon: '⏱️' },
+                { id: 'web-work', name: 'ลิ้งค์งานต่างๆ', url: 'https://web-work-five.vercel.app/', icon: '🔗' },
+                { id: 'tg-ยอด', name: 'ทำยอด TG', url: 'https://tg-five-xi.vercel.app/', icon: '🚀' },
+                { id: 'temp-press', name: 'ทำยอดกดน้อง Temp', url: 'https://temp3hours.vercel.app/', icon: '💡' },
+                { id: 'temp-wrong', name: 'ลงยอดผิด Temp', url: 'https://temp-wong.vercel.app/', icon: '⚠️' },
+                { id: 'template-report', name: 'เทมเพลสรายงาน', url: 'https://template-five-beige.vercel.app/', icon: '📄' }
+            ]
+        }
+    ];
 
-        let loadedApps = {};
-        let isPreloaded = false;
-        let logoutConfirmState = false;
-        let logoutTimeout = null;
-        
-        let currentMenuGroups = [];
-        let isEditMode = false;
-        let sortableInstances = [];
+    let loadedApps = {};
+    let isPreloaded = false;
+    let logoutConfirmState = false;
+    let logoutTimeout = null;
+    let currentMenuGroups = [];
+    let isEditMode = false;
+    let sortableInstances = [];
 
-        const CloudSync = {
-            async loadMenu() {
-                try {
-                    await new Promise(r => setTimeout(r, 100));
-                    if (window.FirebaseCloudSync) {
-                        const cloudData = await window.FirebaseCloudSync.loadMenu();
-                        if (cloudData) {
-                            localStorage.setItem('mflow_cloud_menu', JSON.stringify(cloudData));
-                            return cloudData;
-                        }
+    const CloudSync = {
+        async loadMenu() {
+            try {
+                await new Promise(r => setTimeout(r, 100));
+                if (window.FirebaseCloudSync) {
+                    const cloudData = await window.FirebaseCloudSync.loadMenu();
+                    if (cloudData) {
+                        localStorage.setItem('mflow_cloud_menu', JSON.stringify(cloudData));
+                        return cloudData;
                     }
-                    const saved = localStorage.getItem('mflow_cloud_menu');
-                    if (saved) return JSON.parse(saved);
-                    return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));
-                } catch (e) {
-                    console.error("Cloud Load Failed:", e);
-                    return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));
                 }
-            },
-            async saveMenu(menuConfig) {
-                try {
-                    let success = false;
-                    if (window.FirebaseCloudSync) {
-                        success = await window.FirebaseCloudSync.saveMenu(menuConfig);
-                    }
-                    localStorage.setItem('mflow_cloud_menu', JSON.stringify(menuConfig));
-                    const statusLabel = document.getElementById('cloud-status');
-                    if (success) {
-                        statusLabel.innerText = 'บันทึกขึ้น Cloud แล้ว';
-                        statusLabel.classList.replace('text-red-400', 'text-cyan-300');
-                    } else {
-                        throw new Error("Firebase save returns false");
-                    }
-                    setTimeout(() => {
-                        statusLabel.innerText = 'ออนไลน์ (Cloud Sync)';
-                    }, 2000);
-                } catch (e) {
-                    console.error("Cloud Save Failed:", e);
-                    const statusLabel = document.getElementById('cloud-status');
-                    statusLabel.innerText = 'บันทึกลง Local เท่านั้น';
-                    statusLabel.classList.replace('text-cyan-300', 'text-red-400');
+                const saved = localStorage.getItem('mflow_cloud_menu');[cite: 7]
+                if (saved) return JSON.parse(saved);[cite: 7]
+                
+                return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));[cite: 7]
+            } catch (e) {
+                console.error("Cloud Load Failed:", e);[cite: 7]
+                return JSON.parse(JSON.stringify(DEFAULT_MENU_GROUPS));[cite: 7]
+            }
+        },
+        async saveMenu(menuConfig) {
+            try {
+                let success = false;
+                if (window.FirebaseCloudSync) {
+                    success = await window.FirebaseCloudSync.saveMenu(menuConfig);
                 }
+                
+                localStorage.setItem('mflow_cloud_menu', JSON.stringify(menuConfig));[cite: 7]
+
+                const statusLabel = document.getElementById('cloud-status');
+                if (success) {
+                    statusLabel.innerText = 'บันทึกขึ้น Cloud แล้ว';[cite: 7]
+                    statusLabel.classList.replace('text-red-400', 'text-cyan-300');
+                } else {
+                    throw new Error("Firebase save returns false");
+                }
+
+                setTimeout(() => {
+                    statusLabel.innerText = 'ออนไลน์ (Cloud Sync)';[cite: 7]
+                }, 2000);
+            } catch (e) {
+                console.error("Cloud Save Failed:", e);[cite: 7]
+                const statusLabel = document.getElementById('cloud-status');
+                statusLabel.innerText = 'บันทึกลง Local เท่านั้น';
+                statusLabel.classList.replace('text-cyan-300', 'text-red-400');
             }
-        };
-
-        function updateClock() {
-            const now = new Date();
-            const clockEl = document.getElementById('digital-clock');
-            if(clockEl) clockEl.innerText = now.toLocaleTimeString('th-TH', { hour12: false });
-            const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            const dateEl = document.getElementById('current-date');
-            if(dateEl) dateEl.innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
         }
-        function getDayName(i) { return ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][i]; }
+    };
 
-        window.onload = async () => {
-            setInterval(updateClock, 1000);
-            updateClock();
-            currentMenuGroups = await CloudSync.loadMenu();
-            renderNavMenu();
-            initSplitResizer();
-        };
+    function updateClock() {
+        const now = new Date();
+        const clockEl = document.getElementById('digital-clock');
+        if(clockEl) clockEl.innerText = now.toLocaleTimeString('th-TH', { hour12: false });
+        const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+        const dateEl = document.getElementById('current-date');
+        if(dateEl) dateEl.innerText = `วัน${getDayName(now.getDay())}ที่ ${String(now.getDate()).padStart(2,'0')} ${monthNames[now.getMonth()]} ${now.getFullYear() + 543}`;
+    }
+    function getDayName(i) { return ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][i]; }
 
-        function toggleSidebar() { document.getElementById('main-sidebar').classList.toggle('expanded'); }
-        function closeSidebar() {
-            if (isEditMode) return;
-            const sidebar = document.getElementById('main-sidebar');
-            sidebar.classList.remove('expanded');
-            document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
-        }
+    window.onload = async () => {
+        setInterval(updateClock, 1000);
+        updateClock();
         
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const sidebar = document.getElementById('main-sidebar');
-            
-            if (isEditMode) {
-                sidebar.classList.add('expanded');
-                sidebar.classList.add('edit-mode-active');
-                document.getElementById('edit-mode-text').innerText = "เสร็จสิ้นการแก้ไข";
-                document.querySelectorAll('.menu-group').forEach(mg => mg.classList.add('open'));
-            } else {
-                sidebar.classList.remove('edit-mode-active');
-                document.getElementById('edit-mode-text').innerText = "แก้ไขเมนู";
-                rebuildMenuConfigFromDOM();
-            }
-            renderNavMenu();
+        currentMenuGroups = await CloudSync.loadMenu();
+        renderNavMenu();
+        initSplitResizer();
+    };
+
+    function toggleSidebar() { document.getElementById('main-sidebar').classList.toggle('expanded'); }
+    function closeSidebar() {
+        if (isEditMode) return; 
+        const sidebar = document.getElementById('main-sidebar');
+        sidebar.classList.remove('expanded');
+        document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
+    }
+    
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const sidebar = document.getElementById('main-sidebar');
+        
+        if (isEditMode) {
+            sidebar.classList.add('expanded');
+            sidebar.classList.add('edit-mode-active');
+            document.getElementById('edit-mode-text').innerText = "เสร็จสิ้นการแก้ไข";
+            document.querySelectorAll('.menu-group').forEach(mg => mg.classList.add('open'));
+        } else {
+            sidebar.classList.remove('edit-mode-active');
+            document.getElementById('edit-mode-text').innerText = "แก้ไขเมนู";
+            rebuildMenuConfigFromDOM();
         }
+        renderNavMenu(); 
+    }
 
-        function handleHomeClick() { gotoHome(); closeSidebar(); }
+    function handleHomeClick() { gotoHome(); closeSidebar(); }
 
-        function renderNavMenu() {
-            const container = document.getElementById('nav-container');
-            container.innerHTML = '';
+    function renderNavMenu() {
+        const container = document.getElementById('nav-container');
+        container.innerHTML = '';
+        
+        sortableInstances.forEach(s => s.destroy());
+        sortableInstances = [];
+
+        currentMenuGroups.forEach(group => {
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'menu-group';
+            if (isEditMode) groupDiv.classList.add('open');
             
-            sortableInstances.forEach(s => s.destroy());
-            sortableInstances = [];
+            groupDiv.dataset.id = group.id;
+            groupDiv.dataset.name = group.name;
+            groupDiv.dataset.iconOriginal = group.icon;
 
-            currentMenuGroups.forEach(group => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'menu-group';
-                if (isEditMode) groupDiv.classList.add('open');
+            const title = document.createElement('div');
+            title.className = 'menu-group-title';
+            title.innerHTML = `
+                <span class="edit-controls drag-handle drag-handle-group text-slate-500 hover:text-white mr-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg></span>
+                <span class="min-w-[40px] h-10 flex items-center justify-center glass-panel text-cyan-400">${group.icon}</span>
+                <span class="sidebar-text ml-4 text-[13px] font-bold text-cyan-100 flex-1">${group.name}</span>
                 
-                groupDiv.dataset.id = group.id;
-                groupDiv.dataset.name = group.name;
-                groupDiv.dataset.iconOriginal = group.icon;
+                <span class="edit-controls sidebar-text p-1 text-green-400 hover:bg-green-500/20 rounded mr-1" onclick="promptAddItem('${group.id}', event)" title="เพิ่มเมนูย่อย"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></span>
+                <span class="edit-controls sidebar-text p-1 text-red-400 hover:bg-red-500/20 rounded" onclick="removeGroup('${group.id}', event)" title="ลบหมวดหมู่"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></span>
+                
+                <span class="sidebar-text ml-auto chevron"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></span>
+            `;
+            
+            title.onclick = (e) => {
+                if(isEditMode) return; 
+                const sidebar = document.getElementById('main-sidebar');
+                if (!sidebar.classList.contains('expanded')) {
+                    sidebar.classList.add('expanded');
+                    groupDiv.classList.add('open');
+                    return;
+                }
+                const isOpen = groupDiv.classList.contains('open');
+                document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
+                if (!isOpen) groupDiv.classList.add('open');
+            };
 
-                const title = document.createElement('div');
-                title.className = 'menu-group-title';
-                title.innerHTML = `
-                    <span class="edit-controls drag-handle drag-handle-group text-slate-500 hover:text-white mr-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg></span>
-                    <span class="min-w-[40px] h-10 flex items-center justify-center glass-panel text-cyan-400">${group.icon}</span>
-                    <span class="sidebar-text ml-4 text-[13px] font-bold text-cyan-100 flex-1">${group.name}</span>
-                    
-                    <span class="edit-controls sidebar-text p-1 text-green-400 hover:bg-green-500/20 rounded mr-1" onclick="promptAddItem('${group.id}', event)" title="เพิ่มเมนูย่อย"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></span>
-                    <span class="edit-controls sidebar-text p-1 text-red-400 hover:bg-red-500/20 rounded" onclick="removeGroup('${group.id}', event)" title="ลบหมวดหมู่"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></span>
-                    
-                    <span class="sidebar-text ml-auto chevron"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></span>
-                `;
+            const sub = document.createElement('div');
+            sub.className = 'sub-menu-container';
+            
+            group.items.forEach(app => {
+                const btn = document.createElement('button');
+                btn.className = 'nav-item group/item';
                 
-                title.onclick = (e) => {
+                btn.dataset.id = app.id;
+                btn.dataset.name = app.name;
+                btn.dataset.url = app.url;
+                btn.dataset.iconOriginal = app.icon;
+                
+                btn.onclick = (e) => { 
+                    if(isEditMode) { e.preventDefault(); return; }
+                    e.stopPropagation(); 
+                    switchApp(app.id, app.name, app.url); 
+                    closeSidebar();
+                };
+                
+                btn.ondblclick = (e) => {
                     if(isEditMode) return;
-                    const sidebar = document.getElementById('main-sidebar');
-                    if (!sidebar.classList.contains('expanded')) {
-                        sidebar.classList.add('expanded');
-                        groupDiv.classList.add('open');
-                        return;
-                    }
-                    const isOpen = groupDiv.classList.contains('open');
-                    document.querySelectorAll('.menu-group').forEach(mg => mg.classList.remove('open'));
-                    if (!isOpen) groupDiv.classList.add('open');
+                    e.stopPropagation();
+                    window.open(app.url, '_blank');
                 };
 
-                const sub = document.createElement('div');
-                sub.className = 'sub-menu-container';
-                
-                group.items.forEach(app => {
-                    const btn = document.createElement('button');
-                    btn.className = 'nav-item group/item';
+                btn.innerHTML = `
+                    <span class="edit-controls drag-handle drag-handle-item text-slate-500 hover:text-white mr-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg></span>
+                    <span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span>
+                    <span class="sidebar-text ml-3 text-xs text-slate-300 font-medium flex-1 text-left">${app.name}</span>
                     
-                    btn.dataset.id = app.id;
-                    btn.dataset.name = app.name;
-                    btn.dataset.url = app.url;
-                    btn.dataset.iconOriginal = app.icon;
+                    <span class="edit-controls sidebar-text p-1 text-red-400 hover:bg-red-500/20 rounded mr-1" onclick="removeItem('${group.id}', '${app.id}', event)" title="ลบเมนู"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></span>
                     
-                    btn.onclick = (e) => { 
-                        if(isEditMode) { e.preventDefault(); return; }
-                        e.stopPropagation(); 
-                        switchApp(app.id, app.name, app.url); 
-                        closeSidebar();
-                    };
-                    
-                    btn.ondblclick = (e) => {
-                        if(isEditMode) return;
-                        e.stopPropagation();
-                        window.open(app.url, '_blank');
-                    };
-
-                    btn.innerHTML = `
-                        <span class="edit-controls drag-handle drag-handle-item text-slate-500 hover:text-white mr-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg></span>
-                        <span class="min-w-[28px] h-8 flex items-center justify-center text-sm">${app.icon}</span>
-                        <span class="sidebar-text ml-3 text-xs text-slate-300 font-medium flex-1 text-left">${app.name}</span>
-                        
-                        <span class="edit-controls sidebar-text p-1 text-red-400 hover:bg-red-500/20 rounded mr-1" onclick="removeItem('${group.id}', '${app.id}', event)" title="ลบเมนู"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></span>
-                        
-                        <div class="sidebar-text btn-open-new" onclick="event.stopPropagation(); window.open('${app.url}', '_blank');" title="เปิดแท็บใหม่">
-                            <svg class="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        </div>
-                    `;
-                    sub.appendChild(btn);
-                });
-                
-                groupDiv.appendChild(title);
-                groupDiv.appendChild(sub);
-                container.appendChild(groupDiv);
+                    <div class="sidebar-text btn-open-new" onclick="event.stopPropagation(); window.open('${app.url}', '_blank');" title="เปิดแท็บใหม่">
+                        <svg class="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </div>
+                `;
+                sub.appendChild(btn);
             });
+            
+            groupDiv.appendChild(title);
+            groupDiv.appendChild(sub);
+            container.appendChild(groupDiv);
+        });
 
-            if (isEditMode) {
-                sortableInstances.push(new Sortable(container, {
+        if (isEditMode) {
+            sortableInstances.push(new Sortable(container, {
+                animation: 150,
+                handle: '.drag-handle-group',
+                ghostClass: 'drag-ghost',
+                onEnd: rebuildMenuConfigFromDOM
+            }));
+
+            document.querySelectorAll('.sub-menu-container').forEach(subContainer => {
+                sortableInstances.push(new Sortable(subContainer, {
+                    group: 'shared-items', 
                     animation: 150,
-                    handle: '.drag-handle-group',
+                    handle: '.drag-handle-item',
                     ghostClass: 'drag-ghost',
                     onEnd: rebuildMenuConfigFromDOM
                 }));
-
-                document.querySelectorAll('.sub-menu-container').forEach(subContainer => {
-                    sortableInstances.push(new Sortable(subContainer, {
-                        group: 'shared-items',
-                        animation: 150,
-                        handle: '.drag-handle-item',
-                        ghostClass: 'drag-ghost',
-                        onEnd: rebuildMenuConfigFromDOM
-                    }));
-                });
-            }
-        }
-
-        function rebuildMenuConfigFromDOM() {
-            const newConfig = [];
-            document.querySelectorAll('.menu-group').forEach(groupEl => {
-                const group = {
-                    id: groupEl.dataset.id,
-                    name: groupEl.dataset.name,
-                    icon: groupEl.dataset.iconOriginal,
-                    items: []
-                };
-                groupEl.querySelectorAll('.nav-item').forEach(itemEl => {
-                    group.items.push({
-                        id: itemEl.dataset.id,
-                        name: itemEl.dataset.name,
-                        url: itemEl.dataset.url,
-                        icon: itemEl.dataset.iconOriginal
-                    });
-                });
-                newConfig.push(group);
             });
-            currentMenuGroups = newConfig;
-            CloudSync.saveMenu(currentMenuGroups);
         }
+    }
 
-        function promptAddGroup() {
-            const name = prompt('กรุณาใส่ชื่อ "หมวดหมู่" ใหม่:');
-            if(!name) return;
-            const icon = prompt('กรุณาใส่อีโมจิ (Emoji) หรือ SVG สำหรับไอคอน:', '📁');
-            currentMenuGroups.push({ id: 'grp-' + Date.now(), name, icon: icon || '📁', items: [] });
+    function rebuildMenuConfigFromDOM() {
+        const newConfig = [];
+        document.querySelectorAll('.menu-group').forEach(groupEl => {
+            const group = {
+                id: groupEl.dataset.id,
+                name: groupEl.dataset.name,
+                icon: groupEl.dataset.iconOriginal,
+                items: []
+            };
+            groupEl.querySelectorAll('.nav-item').forEach(itemEl => {
+                group.items.push({
+                    id: itemEl.dataset.id,
+                    name: itemEl.dataset.name,
+                    url: itemEl.dataset.url,
+                    icon: itemEl.dataset.iconOriginal
+                });
+            });
+            newConfig.push(group);
+        });
+        currentMenuGroups = newConfig;
+        CloudSync.saveMenu(currentMenuGroups);
+    }
+
+    function promptAddGroup() {
+        const name = prompt('กรุณาใส่ชื่อ "หมวดหมู่" ใหม่:');
+        if(!name) return;
+        const icon = prompt('กรุณาใส่อีโมจิ (Emoji) หรือ SVG สำหรับไอคอน:', '📁');
+        currentMenuGroups.push({ id: 'grp-' + Date.now(), name, icon: icon || '📁', items: [] });
+        CloudSync.saveMenu(currentMenuGroups);
+        renderNavMenu();
+    }
+
+    function promptAddItem(groupId, event) {
+        event.stopPropagation();
+        const name = prompt('กรุณาใส่ชื่อ "เมนู" ใหม่:');
+        if(!name) return;
+        const url = prompt('กรุณาใส่ URL ของเว็บไซต์ (เช่น https://...):');
+        if(!url) return;
+        const icon = prompt('กรุณาใส่อีโมจิสำหรับไอคอน:', '🔗');
+        
+        const group = currentMenuGroups.find(g => g.id === groupId);
+        if(group) {
+            group.items.push({ id: 'item-' + Date.now(), name, url, icon: icon || '🔗' });
             CloudSync.saveMenu(currentMenuGroups);
             renderNavMenu();
         }
+    }
 
-        function promptAddItem(groupId, event) {
-            event.stopPropagation();
-            const name = prompt('กรุณาใส่ชื่อ "เมนู" ใหม่:');
-            if(!name) return;
-            const url = prompt('กรุณาใส่ URL ของเว็บไซต์ (เช่น https://...):');
-            if(!url) return;
-            const icon = prompt('กรุณาใส่อีโมจิสำหรับไอคอน:', '🔗');
-            
+    function removeGroup(groupId, event) {
+        event.stopPropagation();
+        if(confirm('คุณต้องการลบหมวดหมู่นี้รวมถึงเมนูย่อยทั้งหมดหรือไม่?')) {
+            currentMenuGroups = currentMenuGroups.filter(g => g.id !== groupId);
+            CloudSync.saveMenu(currentMenuGroups);
+            renderNavMenu();
+        }
+    }
+
+    function removeItem(groupId, itemId, event) {
+        event.stopPropagation();
+        if(confirm('คุณต้องการลบเมนูนี้ใช่หรือไม่?')) {
             const group = currentMenuGroups.find(g => g.id === groupId);
             if(group) {
-                group.items.push({ id: 'item-' + Date.now(), name, url, icon: icon || '🔗' });
+                group.items = group.items.filter(i => i.id !== itemId);
                 CloudSync.saveMenu(currentMenuGroups);
                 renderNavMenu();
             }
         }
+    }
 
-        function removeGroup(groupId, event) {
-            event.stopPropagation();
-            if(confirm('คุณต้องการลบหมวดหมู่นี้รวมถึงเมนูย่อยทั้งหมดหรือไม่?')) {
-                currentMenuGroups = currentMenuGroups.filter(g => g.id !== groupId);
-                CloudSync.saveMenu(currentMenuGroups);
-                renderNavMenu();
-            }
+    async function enterSystem() {
+        const welcome = document.getElementById('welcome-screen');
+        const loginBtn = document.getElementById('login-btn');
+        loginBtn.innerHTML = '<span class="animate-pulse">ตรวจสอบโมดูล...</span>';
+        if (!isPreloaded) await preloadAllApps();
+        welcome.style.transform = 'translateY(-100%)';
+        setTimeout(() => {
+            welcome.classList.add('hidden');
+            document.getElementById('main-sidebar').classList.remove('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            gotoHome();
+        }, 700);
+    }
+
+    function gotoHome() { switchApp(HOME_APP_ID, HOME_APP_NAME, HOME_APP_URL); }
+
+    function switchApp(id, name, url) {
+        const split = document.getElementById('main-split-container');
+        const lowerArea = document.getElementById('lower-display-area');
+        const resizer = document.getElementById('resizer');
+        const monitor = document.getElementById('dashboard-monitor-frame');
+
+        document.getElementById('display-title').innerText = name;
+        document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
+        
+        if (id === HOME_APP_ID) {
+            split.classList.remove('full-layout');
+            split.classList.add('home-layout');
+            lowerArea.classList.remove('hidden-layout');
+            resizer.classList.remove('hidden-resizer');
+            if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
+        } else {
+            split.classList.remove('home-layout');
+            split.classList.add('full-layout');
+            lowerArea.classList.add('hidden-layout');
+            resizer.classList.add('hidden-resizer');
         }
-
-        function removeItem(groupId, itemId, event) {
-            event.stopPropagation();
-            if(confirm('คุณต้องการลบเมนูนี้ใช่หรือไม่?')) {
-                const group = currentMenuGroups.find(g => g.id === groupId);
-                if(group) {
-                    group.items = group.items.filter(i => i.id !== itemId);
-                    CloudSync.saveMenu(currentMenuGroups);
-                    renderNavMenu();
-                }
-            }
+        
+        const activeNav = document.querySelector(`[data-id="${id}"]`);
+        if(activeNav) activeNav.classList.add('active-menu');
+        
+        if (loadedApps[id]) {
+            loadedApps[id].classList.add('active');
+        } else {
+            const container = document.getElementById('stack-container');
+            const wrap = document.createElement('div');
+            wrap.className = 'app-container active';
+            const ifr = document.createElement('iframe');
+            ifr.setAttribute('allow', 'clipboard-write');
+            ifr.src = url;
+            wrap.appendChild(ifr);
+            container.appendChild(wrap);
+            loadedApps[id] = wrap;
         }
+    }
 
-        async function enterSystem() {
-            const welcome = document.getElementById('welcome-screen');
-            const loginBtn = document.getElementById('login-btn');
-            loginBtn.innerHTML = '<span class="animate-pulse">ตรวจสอบโมดูล...</span>';
-            if (!isPreloaded) await preloadAllApps();
-            welcome.style.transform = 'translateY(-100%)';
-            setTimeout(() => {
-                welcome.classList.add('hidden');
-                document.getElementById('main-sidebar').classList.remove('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-                gotoHome();
-            }, 700);
-        }
+    function initSplitResizer() {
+        const resizer = document.getElementById('resizer');
+        const upper = document.getElementById('upper-workspace');
+        const lower = document.getElementById('lower-display-area');
+        let isResizing = false;
 
-        function gotoHome() { switchApp(HOME_APP_ID, HOME_APP_NAME, HOME_APP_URL); }
-
-        function switchApp(id, name, url) {
-            const split = document.getElementById('main-split-container');
-            const lowerArea = document.getElementById('lower-display-area');
-            const resizer = document.getElementById('resizer');
-            const monitor = document.getElementById('dashboard-monitor-frame');
-
-            document.getElementById('display-title').innerText = name;
-            document.querySelectorAll('.app-container').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-menu'));
-            
-            if (id === HOME_APP_ID) {
-                split.classList.remove('full-layout');
-                split.classList.add('home-layout');
-                lowerArea.classList.remove('hidden-layout');
-                resizer.classList.remove('hidden-resizer');
-                if (monitor.src === 'about:blank') monitor.src = DASHBOARD_URL;
-            } else {
-                split.classList.remove('home-layout');
-                split.classList.add('full-layout');
-                lowerArea.classList.add('hidden-layout');
-                resizer.classList.add('hidden-resizer');
+        resizer.addEventListener('mousedown', () => { isResizing = true; document.body.style.cursor = 'ns-resize'; });
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const containerHeight = document.getElementById('main-split-container').offsetHeight;
+            const pointerY = e.clientY - 80; 
+            const upperFlex = (pointerY / containerHeight) * 2;
+            const lowerFlex = 2 - upperFlex;
+            if (upperFlex > 0.3 && lowerFlex > 0.3) {
+                upper.style.flex = upperFlex;
+                lower.style.flex = lowerFlex;
             }
-            
-            const activeNav = document.querySelector(`[data-id="${id}"]`);
-            if(activeNav) activeNav.classList.add('active-menu');
-            
-            if (loadedApps[id]) {
-                loadedApps[id].classList.add('active');
-            } else {
-                const container = document.getElementById('stack-container');
+        });
+        document.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = 'default'; });
+    }
+
+    async function preloadAllApps() {
+        if (isPreloaded) return;
+        const container = document.getElementById('stack-container');
+        const allApps = currentMenuGroups.flatMap(g => g.items);
+        for (const app of allApps) {
+            if (!loadedApps[app.id]) {
                 const wrap = document.createElement('div');
-                wrap.className = 'app-container active';
-                
-                // ห่อ Iframe ด้วย Wrapper สำหรับ iOS Touch Scrolling
-                const iosWrapper = document.createElement('div');
-                iosWrapper.className = 'iframe-ios-wrapper';
-
+                wrap.className = 'app-container';
                 const ifr = document.createElement('iframe');
                 ifr.setAttribute('allow', 'clipboard-write');
-                ifr.src = url;
-                
-                iosWrapper.appendChild(ifr);
-                wrap.appendChild(iosWrapper);
+                wrap.appendChild(ifr);
                 container.appendChild(wrap);
-                loadedApps[id] = wrap;
+                ifr.src = app.url;
+                loadedApps[app.id] = wrap;
+                await new Promise(r => setTimeout(r, 60)); 
             }
         }
+        isPreloaded = true;
+    }
 
-        function initSplitResizer() {
-            const resizer = document.getElementById('resizer');
-            const upper = document.getElementById('upper-workspace');
-            const lower = document.getElementById('lower-display-area');
-            let isResizing = false;
-
-            resizer.addEventListener('mousedown', () => { isResizing = true; document.body.style.cursor = 'ns-resize'; });
-            document.addEventListener('mousemove', (e) => {
-                if (!isResizing) return;
-                const containerHeight = document.getElementById('main-split-container').offsetHeight;
-                const pointerY = e.clientY - 80; 
-                const upperFlex = (pointerY / containerHeight) * 2;
-                const lowerFlex = 2 - upperFlex;
-                if (upperFlex > 0.3 && lowerFlex > 0.3) {
-                    upper.style.flex = upperFlex;
-                    lower.style.flex = lowerFlex;
-                }
-            });
-            document.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = 'default'; });
+    function handleLogoutClick() {
+        const sidebar = document.getElementById('main-sidebar');
+        if (!sidebar.classList.contains('expanded')) { sidebar.classList.add('expanded'); return; }
+        const iconBox = document.getElementById('logout-icon-box');
+        if (!logoutConfirmState) {
+            logoutConfirmState = true;
+            if(iconBox) iconBox.classList.add('bg-red-600', 'animate-pulse');
+            logoutTimeout = setTimeout(() => resetLogoutButton(), 3000);
+        } else {
+            performSmoothLogout();
         }
+    }
 
-        async function preloadAllApps() {
-            if (isPreloaded) return;
-            const container = document.getElementById('stack-container');
-            const allApps = currentMenuGroups.flatMap(g => g.items);
-            for (const app of allApps) {
-                if (!loadedApps[app.id]) {
-                    const wrap = document.createElement('div');
-                    wrap.className = 'app-container';
-                    
-                    const iosWrapper = document.createElement('div');
-                    iosWrapper.className = 'iframe-ios-wrapper';
+    function performSmoothLogout() {
+        const overlay = document.getElementById('logout-overlay');
+        const progress = document.getElementById('logout-progress');
+        const welcome = document.getElementById('welcome-screen');
+        const loginBtn = document.getElementById('login-btn');
+        overlay.classList.add('active');
+        progress.style.transition = 'none';
+        progress.style.width = '0%';
+        void progress.offsetWidth;
+        progress.style.transition = 'width 1500ms linear';
+        progress.style.width = '100%';
 
-                    const ifr = document.createElement('iframe');
-                    ifr.setAttribute('allow', 'clipboard-write');
-                    
-                    iosWrapper.appendChild(ifr);
-                    wrap.appendChild(iosWrapper);
-                    container.appendChild(wrap);
-                    ifr.src = app.url;
-                    loadedApps[app.id] = wrap;
-                    await new Promise(r => setTimeout(r, 60)); 
-                }
-            }
-            isPreloaded = true;
-        }
-
-        function handleLogoutClick() {
-            const sidebar = document.getElementById('main-sidebar');
-            if (!sidebar.classList.contains('expanded')) { sidebar.classList.add('expanded'); return; }
-            const iconBox = document.getElementById('logout-icon-box');
-            if (!logoutConfirmState) {
-                logoutConfirmState = true;
-                if(iconBox) iconBox.classList.add('bg-red-600', 'animate-pulse');
-                logoutTimeout = setTimeout(() => resetLogoutButton(), 3000);
-            } else {
-                performSmoothLogout();
-            }
-        }
-
-        function performSmoothLogout() {
-            const overlay = document.getElementById('logout-overlay');
-            const progress = document.getElementById('logout-progress');
-            const welcome = document.getElementById('welcome-screen');
-            const loginBtn = document.getElementById('login-btn');
-            overlay.classList.add('active');
-            progress.style.transition = 'none';
-            progress.style.width = '0%';
-            void progress.offsetWidth;
-            progress.style.transition = 'width 1500ms linear';
-            progress.style.width = '100%';
-
-            setTimeout(() => {
-                welcome.classList.remove('hidden');
-                welcome.style.transform = 'translateY(0)';
-                loginBtn.innerHTML = '<span class="relative z-10 font-medium text-lg text-white">คลิกเพื่อเข้าใช้งานระบบ</span>';
-                document.getElementById('main-sidebar').classList.add('hidden');
-                closeSidebar();
-                document.getElementById('main-content').classList.add('hidden');
-                overlay.classList.remove('active');
-                resetLogoutButton();
-                logoutConfirmState = false;
-                document.getElementById('dashboard-monitor-frame').src = 'about:blank';
-            }, 1600);
-        }
-
-        function resetLogoutButton() {
+        setTimeout(() => {
+            welcome.classList.remove('hidden');
+            welcome.style.transform = 'translateY(0)';
+            loginBtn.innerHTML = '<span class="relative z-10 font-medium text-lg text-white">คลิกเพื่อเข้าใช้งานระบบ</span>';
+            document.getElementById('main-sidebar').classList.add('hidden');
+            closeSidebar();
+            document.getElementById('main-content').classList.add('hidden');
+            overlay.classList.remove('active');
+            resetLogoutButton();
             logoutConfirmState = false;
-            const iconBox = document.getElementById('logout-icon-box');
-            if(iconBox) iconBox.classList.remove('bg-red-600', 'animate-pulse');
-            if(logoutTimeout) clearTimeout(logoutTimeout);
-        }
+            document.getElementById('dashboard-monitor-frame').src = 'about:blank';
+        }, 1600);
+    }
 
-        function toggleQuickNote() { document.getElementById('quick-note-panel').classList.toggle('open'); }
-        function clearNote() { if(confirm('ล้างบันทึกทั้งหมดหรือไม่?')) document.getElementById('quick-note-area').value = ''; }
-    </script>
+    function resetLogoutButton() {
+        logoutConfirmState = false;
+        const iconBox = document.getElementById('logout-icon-box');
+        if(iconBox) iconBox.classList.remove('bg-red-600', 'animate-pulse');
+        if(logoutTimeout) clearTimeout(logoutTimeout);
+    }
+
+    function toggleQuickNote() { document.getElementById('quick-note-panel').classList.toggle('open'); }
+    function clearNote() { if(confirm('ล้างบันทึกทั้งหมดหรือไม่?')) document.getElementById('quick-note-area').value = ''; }
+</script>
 </body>
 </html>
