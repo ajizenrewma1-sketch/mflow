@@ -1,0 +1,8 @@
+{
+  "name": "M-Flow System",
+  "short_name": "M-Flow",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e293b"
+}
