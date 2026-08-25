@@ -21,12 +21,12 @@
         }
 
         body {
-            font-family: 'Kanit', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f8fafc;
-            overflow: hidden;
-            height: 100vh;
-        }
+    font-family: 'Kanit', sans-serif;
+    background-color: var(--bg-dark);
+    color: #f8fafc;
+    overflow: hidden;
+    height: 100dvh; /* เปลี่ยนจาก 100vh เป็น 100dvh */
+}
 
         .font-future { font-family: 'Orbitron', sans-serif; }
 
@@ -51,11 +51,24 @@
             position: relative;
             z-index: 50;
             overflow-x: hidden;
-            overflow-y: auto;
-            scrollbar-width: none;
+            overflow-y: hidden; /* เปลี่ยนจาก auto เป็น hidden เพื่อป้องกันการเลื่อนซ้อนกัน */
+            height: 100dvh;     /* ปรับความสูงให้รองรับแถบเครื่องมือบน iPad/Chrome */
         }
         
         .sidebar::-webkit-scrollbar { display: none; }
+
+        /* เพิ่มส่วนนี้สำหรับจัดการการเลื่อนเมนูด้านในบน iPad/Chrome */
+        #sidebar-nav {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* ทำให้ใช้นิ้วปัดเลื่อนบน iOS ได้อย่างลื่นไหล */
+            touch-action: pan-y;               /* บังคับให้อนุญาตการเลื่อนขึ้น-ลง */
+            scrollbar-width: none;
+            height: calc(100dvh - 140px);      /* เว้นพื้นที่สำหรับโลโก้และปุ่มด้านล่าง */
+        }
+
+        #sidebar-nav::-webkit-scrollbar { 
+            display: none; 
+        }
 
         .sidebar.expanded {
             width: 320px;
