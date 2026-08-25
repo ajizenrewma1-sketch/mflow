@@ -188,23 +188,23 @@
     will-change: transform, opacity;
     
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch; /* สำคัญมากสำหรับ iOS/iPad */
 }
 
-        .app-container.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
+.app-container.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
 
-        iframe {
+iframe {
     width: 100%;
     height: 100%;
     border: none;
     border-radius: 20px;
     background: #fff;
-    
     display: block; 
+    -webkit-overflow-scrolling: touch;
 }
 
         /* Quick Note Sidebar */
